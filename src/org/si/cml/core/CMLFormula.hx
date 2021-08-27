@@ -10,13 +10,13 @@ package org.si.cml.core;
 //package org.si.cml;
 
 import org.si.cml.CMLFiber;
-    
-    
+
+
 /** @private statemant for formula calculation */
 class CMLFormula extends CMLState
 {
-        
-        
+
+
     // variables
     //------------------------------------------------------------
         private  var _arg_index:Int = 0;
@@ -25,10 +25,10 @@ class CMLFormula extends CMLState
         static private var stacOperator:Array<CMLFormulaElem> = new Array<CMLFormulaElem>();
         static private var stacOperand :Array<CMLFormulaElem> = new Array<CMLFormulaElem>();
 
-        static private  var _prefixRegExp :EReg; 
-        static private  var _postfixRegExp:EReg; 
+        static private  var _prefixRegExp :EReg;
+        static private  var _postfixRegExp:EReg;
         static private  var _operand_rex:String = null;
-       
+
         // Initialize all statics (call from CMLParser._createCMLRegExp())
         static public var operand_rex(get,null) : String;
         static public function get_operand_rex() : String {
@@ -44,22 +44,22 @@ class CMLFormula extends CMLState
             }
             return _operand_rex;
         }
-        
-        
-        
-        
+
+
+
+
     // functions
     //------------------------------------------------------------
         public function new(state:CMLState, pnfa:Bool)
         {
             super(CMLState.ST_FORMULA);
-            
+
             jump = state;
             func = _calc;
             _arg_index = state._args.length - 1;
             stacOperator.splice(stacOperator.length, 0);
             max_reference = 0;
-            
+
             // Pickup Number From Argument ?
             if (pnfa) {
                 stacOperand.splice(stacOperand.length,0);
@@ -70,22 +70,22 @@ class CMLFormula extends CMLState
             }
         }
 
-        
+
         override public function _setCommand(cmd:String) : CMLState
         {
             return this;
         }
 
 
-        
-        
+
+
     // function to create formula structure
     //------------------------------------------------------------
         // push operator stac
-        public function pushOperator(operator:Dynamic, isSingle:Bool) : Bool
+        public function pushOperator(poperator:Dynamic, isSingle:Bool) : Bool
         {
-            if (operator == null) return false;
-            var ope:CMLFormulaOperator = new CMLFormulaOperator(operator, isSingle);
+            if (poperator == null) return false;
+            var ope:CMLFormulaOperator = new CMLFormulaOperator(poperator, isSingle);
             while (stacOperator.length > 0 && cast(stacOperator[0],CMLFormulaOperator).priorL > ope.priorR) {
                 var oprcnt:Int = cast(stacOperator[0],CMLFormulaOperator).oprcnt;
                 if (stacOperand.length < oprcnt) return false;
@@ -93,14 +93,14 @@ class CMLFormula extends CMLState
                 cast(stacOperator[0],CMLFormulaOperator).opr0 = (oprcnt > 0) ? (stacOperand.shift()) : (null);
                 stacOperand.unshift(stacOperator.shift());
             }
-            
+
             // closed by ()
             if (stacOperator.length>0 && cast(stacOperator[0],CMLFormulaOperator).priorL==1 && ope.priorR==1) stacOperator.shift();
             else stacOperator.unshift(ope);
             return true;
         }
-        
-        
+
+
         // push operand stac
         public function pushLiteral(literal:Dynamic) : Void
         {
@@ -111,21 +111,21 @@ class CMLFormula extends CMLState
             stacOperand.unshift(lit);
         }
 
-        
+
         // push prefix
         public function pushPrefix(prefix:Dynamic, isSingle:Bool) : Bool
         {
             return (prefix != null) ? _parse_and_push(_prefixRegExp, prefix, isSingle) : true;
         }
 
-        
+
         // push postfix
         public function pushPostfix(postfix:Dynamic, isSingle:Bool) : Bool
         {
             return (postfix != null) ? _parse_and_push(_postfixRegExp, postfix, isSingle) : true;
         }
-        
-        
+
+
         // call from pushPostfix and pushPrefix.
         private function _parse_and_push(rex:EReg, str:String, isSingle:Bool) : Bool
         {
@@ -140,7 +140,7 @@ class CMLFormula extends CMLState
             return true;
         }
 
-        
+
         // construct formula structure
         public function construct() : Bool
         {
@@ -155,8 +155,8 @@ class CMLFormula extends CMLState
             return (_form != null);
         }
 
-        
-        
+
+
 
     // calculation
     //------------------------------------------------------------

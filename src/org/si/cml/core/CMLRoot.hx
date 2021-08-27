@@ -8,7 +8,7 @@ class CMLRoot extends CMLObject
 {
     /** scroll angle */
     public var _scrollAngle:Float;
-        
+
     /** constructor */
     function new()
     {

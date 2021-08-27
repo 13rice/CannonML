@@ -11,20 +11,20 @@ package org.si.cml.core;
 import org.si.cml.CMLFiber;
 import org.si.cml.CMLObject;
 import org.si.cml.CMLSequence;
-import flash.errors.Error;    
-    
+import org.si.cml.core.Error;
+
 /** @private */
 class CMLState extends CMLListElem
 {
         static private var sin:CMLSinTable;
-    
+
     // variables
     //------------------------------------------------------------
         public var type:Int;     // statement type
         public var func:CMLFiber->Bool; // execution function
         public var jump:CMLState; // jump pointer
         public var _args:Array<Dynamic>;   // arguments array
-        
+
         static inline public var ST_NORMAL  :Int = 0;   // normal command
         static inline public var ST_REFER   :Int = 1;   // refer sequence
         static inline public var ST_LABEL   :Int = 2;   // labeled sequence define "#*.{...}"
@@ -35,7 +35,7 @@ class CMLState extends CMLListElem
         static inline public var ST_ELSE    :Int = 7;   // else ":"
         static inline public var ST_SELECT  :Int = 8;   // select "[s?"
         static inline public var ST_BLOCKEND:Int = 9;   // block end "]"
-        static inline public var ST_FORMULA :Int =10;   // formula 
+        static inline public var ST_FORMULA :Int =10;   // formula
         static inline public var ST_STRING  :Int =11;   // string
         static inline public var ST_END     :Int =12;   // end
         static inline public var ST_BARRAGE :Int =13;   // multiple barrage
@@ -45,17 +45,17 @@ class CMLState extends CMLListElem
 
         // invert flag
         static public var _invert_flag:Int = 0;
-        
+
         // speed ratio
         static public var _speed_ratio:Float = 1;
-        
+
         // command regular expressions
         static public var command_rex:String = //{
         "(\\[s\\?|\\[\\?|\\[|\\]|\\}|:|\\^&|&|w\\?|w|~|pd|px|py|p|vd|vx|vy|v|ad|ax|ay|a|gp|gt|rc|r|ko|i|m|cd|csa|csr|css|\\^@|@ko|@o|@|\\^n|nc|n|\\^f|fc|f|qx|qy|q|bm|bs|br|bv|hax|ha|hox|ho|hpx|hp|htx|ht|hvx|hv|hs|td|tp|to|kf)";
-        
-        
-        
-        
+
+
+
+
     // functions
     //------------------------------------------------------------
         public function new(type_:Int = ST_NORMAL)
@@ -65,7 +65,7 @@ class CMLState extends CMLListElem
             jump = null;
             type = type_;
             sin = new CMLSinTable();
-            
+
             switch (type) {
             case ST_RAPID:    func = _rapid_fire;
             case ST_BARRAGE:  func = _initialize_barrage;
@@ -75,8 +75,8 @@ class CMLState extends CMLListElem
             default:          func = _nop;
             }
         }
-    
-    
+
+
         override public function clear() : Void
         {
             _args.splice(_args.length,0);
@@ -87,19 +87,19 @@ class CMLState extends CMLListElem
         static public var speedRatio(get,set):Float;
         static public function set_speedRatio(r:Float) : Float { _speed_ratio = r; return _speed_ratio;}
         static public function get_speedRatio() : Float { return _speed_ratio; }
-        
+
         public function setCommand(cmd:String) : CMLState { return _setCommand(cmd); }
-        
-        
-        
-        
+
+
+
+
     // private fuctions
     //------------------------------------------------------------
         /** set command by key string @private */
         public function _setCommand(cmd:String) : CMLState
         {
             switch (cmd) {
-            // waiting 
+            // waiting
             case "w":
                 if (_args.length == 0) {
                     func = _w0;
@@ -190,11 +190,11 @@ class CMLState extends CMLListElem
             case "to": func = _to; _resetParameters(1);
             // mirror
             case "m":  func = _m;  _resetParameters(1);
-            
+
             default:
                 throw new Error("Unknown command; " + cmd + " ?");
             }
-            
+
             // set undefined augments to 0.
             var idx:Int;
             for (idx in 0..._args.length) {
@@ -203,7 +203,7 @@ class CMLState extends CMLListElem
 
             return this;
         }
-        
+
         // set default arguments
         public function _resetParameters(argc:Int) : Void
         {
@@ -216,9 +216,9 @@ class CMLState extends CMLListElem
             }
         }
 
-        
-        
-        
+
+
+
     // command executer
     //------------------------------------------------------------
         // set invertion flag (call from CMLFiber.execute())
@@ -226,10 +226,10 @@ class CMLState extends CMLListElem
         {
             _invert_flag = invt_;
         }
-        
+
         // no operation or end
         public function _nop(fbr:CMLFiber) : Bool { return true; }
-        
+
         // looping, branching
         private function _loop_start(fbr:CMLFiber) : Bool {
             fbr.lcnt.unshift(0);
@@ -268,21 +268,21 @@ class CMLState extends CMLListElem
         private function _w0(fbr:CMLFiber) : Bool {                      fbr.wcnt = fbr.wtm1; return false; }
         private function _w1(fbr:CMLFiber) : Bool { fbr.wtm1 = _args[0]; fbr.wcnt = fbr.wtm1; return false; }
         private function _wi(fbr:CMLFiber) : Bool {                      fbr.wcnt = fbr.wtm2; return (fbr.wcnt == 0); }
-        
+
         // waitif
         private function _waitif(fbr:CMLFiber) : Bool {
             if (_args[0] == 0) return true;
             fbr._pointer = (cast(prev,CMLState).type == ST_FORMULA) ? cast(prev.prev,CMLState) : cast(prev,CMLState);
             return false;
         }
-        
+
         // interpolation interval
-        private function _i(fbr:CMLFiber) : Bool { 
+        private function _i(fbr:CMLFiber) : Bool {
             fbr.chgt = Std.int(_args[0]);
             fbr.wtm2 = fbr.chgt;
             return true;
         }
-        
+
         // mirroring
         private function _m(fbr:CMLFiber) : Bool {
             // invert flag
@@ -308,8 +308,8 @@ class CMLState extends CMLListElem
             var iang:Int;
             if (fbr.hopt != CMLFiber.HO_SEQ) iang = sin.index(fbr._getAngleForRotationCommand()+CMLObject.scrollAngle);
             else                             iang = sin.index(fbr.object.anglePosition-fbr._getAngleForRotationCommand());
-            var c:Float = sin[iang+sin.cos_shift],
-                s:Float = sin[iang];
+            var c:Float = @:privateAccess sin.sin[iang+sin.cos_shift],
+                s:Float = @:privateAccess sin.sin[iang];
             fbr.object.setPosition(c*_args[0]-s*_args[1], s*_args[0]+c*_args[1], fbr.chgt);
             return true;
         }
@@ -322,8 +322,8 @@ class CMLState extends CMLListElem
             var iang:Int;
             if (fbr.hopt != CMLFiber.HO_SEQ) iang = sin.index(fbr._getAngleForRotationCommand()+CMLObject.scrollAngle);
             else                             iang = sin.index(fbr.object.angleVelocity-fbr._getAngle(0));
-            var c:Float = sin[iang+sin.cos_shift],
-                s:Float = sin[iang],
+            var c:Float = @:privateAccess sin.sin[iang+sin.cos_shift],
+                s:Float = @:privateAccess sin.sin[iang],
                 h:Float = _args[0] * _speed_ratio,
                 v:Float = _args[1] * _speed_ratio;
             fbr.object.setVelocity(c*h-s*v, s*h+c*v, fbr.chgt);
@@ -338,8 +338,8 @@ class CMLState extends CMLListElem
             var iang:Int;
             if (fbr.hopt != CMLFiber.HO_SEQ) iang = sin.index(fbr._getAngleForRotationCommand()+CMLObject.scrollAngle);
             else                             iang = sin.index(fbr.object.angleAccel-fbr._getAngle(0));
-            var c:Float = sin[iang+sin.cos_shift],
-                s:Float = sin[iang],
+            var c:Float = @:privateAccess sin.sin[iang+sin.cos_shift],
+                s:Float = @:privateAccess sin.sin[iang],
                 h:Float = _args[0] * _speed_ratio,
                 v:Float = _args[1] * _speed_ratio;
             fbr.object.setAccelaration(c*h-s*v, s*h+c*v, 0);
@@ -352,16 +352,16 @@ class CMLState extends CMLListElem
             fbr.object.setGravity(_args[0] * _speed_ratio, _args[1] * _speed_ratio, _args[2]);
             return true;
         }
-        
+
         // It's very tough to implement bulletML...('A`)
         private function _csa(fbr:CMLFiber) : Bool { fbr.object.setChangeSpeed(_args[0]*_speed_ratio,                     fbr.chgt); return true; }
         private function _csr(fbr:CMLFiber) : Bool { fbr.object.setChangeSpeed(_args[0]*_speed_ratio+fbr.object.velocity, fbr.chgt); return true; }
-        private function _css(fbr:CMLFiber) : Bool { 
+        private function _css(fbr:CMLFiber) : Bool {
             if (fbr.chgt == 0) fbr.object.setChangeSpeed(_args[0]*_speed_ratio+fbr.object.velocity,          0);
             else               fbr.object.setChangeSpeed(_args[0]*_speed_ratio*fbr.chgt+fbr.object.velocity, fbr.chgt);
-            return true; 
+            return true;
         }
-        private function _cd(fbr:CMLFiber) : Bool { 
+        private function _cd(fbr:CMLFiber) : Bool {
             fbr.object.setChangeDirection(fbr._getAngleForRotationCommand(), fbr.chgt, _args[0]*_speed_ratio, fbr._isShortestRotation());
             return true;
         }
@@ -385,7 +385,7 @@ class CMLState extends CMLListElem
             fbr.destroyAllChildren();
             return true;
         }
-        
+
         // initialize barrage
         private function _initialize_barrage(fbr:CMLFiber)  : Bool { fbr.barrage.clear(); return true; }
         // multiple barrage
@@ -394,7 +394,7 @@ class CMLState extends CMLListElem
         private function _bs(fbr:CMLFiber) : Bool { fbr.barrage.appendSequence(_args[0], _invertRotation(_args[1]), _args[2], _args[3]); return true; }
         // random barrage
         private function _br(fbr:CMLFiber) : Bool { fbr.barrage.appendRandom(_args[0], _invertRotation(_args[1]), _args[2], _args[3]);   return true; }
-        
+
         // bullet sequence of verocity
         private function _bv(fbr:CMLFiber) : Bool { fbr.bul.setSpeedStep(_args[0]*_speed_ratio); return true; }
 
@@ -415,7 +415,7 @@ class CMLState extends CMLListElem
         private function _td(fbr:CMLFiber) : Bool { fbr.target = null; return true; }
         private function _tp(fbr:CMLFiber) : Bool { fbr.target = fbr.object.parent; return true; }
         private function _to(fbr:CMLFiber) : Bool { fbr.target = fbr.object.findChild(Std.int(_args[0])); return true; }
-        
+
         // call sequence (create new fiber directry)
         // gosub
         private function _gosub(fbr:CMLFiber) : Bool {
@@ -423,7 +423,7 @@ class CMLState extends CMLListElem
             if (fbr.jstc.length > CMLFiber._stacmax) {
                 throw new Error("CML Execution error. The '&' command calls deeper than stac limit.");
             }
-            
+
             // next statement is referential sequence
             var ref:CMLRefer = cast(next,CMLRefer);
             var seq:CMLSequence  = (ref.jump != null) ? cast(ref.jump,CMLSequence) : (fbr.seqSub);
@@ -438,7 +438,7 @@ class CMLState extends CMLListElem
             if (cast(next,CMLState).jump != null) fbr.seqSub = cast(cast(next,CMLState).jump, CMLSequence);
             return true;
         }
-        
+
         // return
         private function _ret(fbr:CMLFiber) : Bool {
             // pop jump stac
@@ -450,7 +450,7 @@ class CMLState extends CMLListElem
             }
             return true;
         }
-        
+
         // execute new fiber, fiber on child
         private function _at(fbr:CMLFiber)   : Bool { _fiber(fbr, _args[0]); return true; }
         private function _ato(fbr:CMLFiber)  : Bool { _fiber_child(fbr, fbr.object, _args); return true; }
@@ -461,7 +461,7 @@ class CMLState extends CMLListElem
         private function _n(fbr:CMLFiber)  : Bool { _new(fbr, Std.int(_args[0]), false); return true; }
         private function _nc(fbr:CMLFiber) : Bool { _new(fbr, Std.int(_args[0]), true);  return true; }
     private function _fn(fbr:CMLFiber) : Bool { if (cast(next,CMLState).jump != null) fbr.seqNew = cast(cast(next,CMLState).jump,CMLSequence); return true; }
-        
+
         // fire
         private function _f0(fbr:CMLFiber)  : Bool {                                        _fire(fbr, Std.int(_args[1]), false); fbr.bul.update(); return true; }
         private function _f1(fbr:CMLFiber)  : Bool { fbr.bul.speed = _args[0]*_speed_ratio; _fire(fbr, Std.int(_args[1]), false); fbr.bul.update(); return true; }
@@ -469,7 +469,7 @@ class CMLState extends CMLListElem
         private function _fc1(fbr:CMLFiber) : Bool { fbr.bul.speed = _args[0]*_speed_ratio; _fire(fbr, Std.int(_args[1]), true);  fbr.bul.update(); return true; }
 
         // fake fire
-        private function _ff0(fbr:CMLFiber) : Bool { 
+        private function _ff0(fbr:CMLFiber) : Bool {
             var refer:CMLRefer = cast(next,CMLRefer);
             if (refer.jump != null) fbr.seqFire = cast(refer.jump,CMLSequence);
             fbr.fang = fbr._getAngle(fbr.fang);
@@ -481,7 +481,7 @@ class CMLState extends CMLListElem
             fbr.bul.speed = _args[0]*_speed_ratio;
             return _ff0(fbr);
         }
-        
+
         // statement for rapid fire
         private function _rapid_fire(fbr:CMLFiber) : Bool {
             // end
@@ -489,17 +489,17 @@ class CMLState extends CMLListElem
 
             // create new bullet object and initialize
             _create_multi_bullet(fbr, fbr.wtm1, (fbr.wtm2 == 0)?false:true, null);
-            
+
             // calc bullet and set wait counter
             fbr.bul.update();
             fbr.wcnt = Std.int(fbr.bul.interval);
-            
+
             // repeat
             fbr._pointer = CMLFiber.seqRapid;
-            
+
             return false;
         }
-        
+
         // statement to wait for destruction
         private function _wait4destruction(fbr:CMLFiber) : Bool {
             if (fbr.object.destructionStatus == fbr._access_id) {
@@ -508,10 +508,10 @@ class CMLState extends CMLListElem
             }
             return false;
         }
-        
-        
-        
-        
+
+
+
+
     // invertion
     //--------------------------------------------------
         private function _invertAngle(ang:Float) : Float
@@ -521,26 +521,26 @@ class CMLState extends CMLListElem
             return ang;
         }
 
-        
+
         private function _invertRotation(rot:Float) : Float
         {
             return (_invert_flag==1 || _invert_flag==2) ? -rot : rot;
         }
 
-        
+
         private function _invertX(x:Float) : Float
         {
             return ((_invert_flag&(2-CMLObject.vertical)) != 0) ? -x : x;
         }
-        
+
 
         private function _invertY(y:Float) : Float
         {
             return ((_invert_flag&(1+CMLObject.vertical)) != 0) ? -y : y;
         }
 
-        
-        
+
+
 
     // creating routine
     //--------------------------------------------------
@@ -553,7 +553,7 @@ class CMLState extends CMLListElem
             fbr.seqExec = seq;                                                                      // update executing sequence
             fbr._pointer = ref;                                                                     // skip next statement
         }
-        
+
 
         // run new destruction fiber
         private function _fiber_destruction(fbr:CMLFiber, destStatus:Int) : Void
@@ -572,7 +572,7 @@ class CMLState extends CMLListElem
             var ref:CMLRefer = cast(next,CMLRefer);                                             // next statement is referential sequence
             var seq:CMLSequence = (ref.jump != null) ? cast(ref.jump,CMLSequence) : (fbr.seqExec);   // executing sequence
             var idxmax:Int = object_id.length-1;
-            
+
             // ('A`) chaos...
             function _reflective_fiber_creation(_parent:CMLObject, _idx:Int) : Void {
 
@@ -580,7 +580,7 @@ class CMLState extends CMLListElem
                     fbr._newObjectFiber(obj, seq, _invert_flag, ref._args);
                     return false;
                 }
-                
+
                 function __rfc(obj:CMLObject):Bool {
                     _reflective_fiber_creation(obj, _idx+1);
                     return false;
@@ -590,7 +590,7 @@ class CMLState extends CMLListElem
             }
 
             _reflective_fiber_creation(obj, 0);                                                 // find child by object_id and create new fiber
-            
+
             fbr.seqExec = seq;                                                                  // update executing sequence
             fbr._pointer = ref;                                                                 // skip next statement
 
@@ -602,8 +602,8 @@ class CMLState extends CMLListElem
         {
             // next statement is referential sequence
             var ref:CMLRefer = cast(next,CMLRefer);
-            
-            // update new pointer, ref.jump shows executing sequence            
+
+            // update new pointer, ref.jump shows executing sequence
             if (ref.jump != null) fbr.seqNew = cast(ref.jump,CMLSequence);
 
             // creating center position
@@ -613,8 +613,8 @@ class CMLState extends CMLListElem
             if (!isParts) {
                 var sang:Int = sin.index(fbr.object.angleOnStage),
                     cang:Int = sang + sin.cos_shift;
-                x = fbr.object.x + sin[cang]*fbr.fx - sin[sang]*fbr.fy;
-                y = fbr.object.y + sin[sang]*fbr.fx + sin[cang]*fbr.fy;
+                x = fbr.object.x + @:privateAccess sin.sin[cang]*fbr.fx - @:privateAccess sin.sin[sang]*fbr.fy;
+                y = fbr.object.y + @:privateAccess sin.sin[sang]*fbr.fx + @:privateAccess sin.sin[cang]*fbr.fy;
             }
 
             // create object
@@ -629,13 +629,13 @@ class CMLState extends CMLListElem
             fbr._pointer = ref;
         }
 
-        
+
         // fire
         private function _fire(fbr:CMLFiber, access_id:Int, isParts:Bool) : Void
         {
             // next statement is referential sequence
             var ref:CMLRefer = cast(next,CMLRefer);
-            
+
             // update fire pointer, ref.jump shows executing sequence
             if (ref.jump != null) fbr.seqFire = cast(ref.jump,CMLSequence);
 
@@ -646,7 +646,7 @@ class CMLState extends CMLListElem
             fbr._pointer = ref;
         }
 
-        
+
         // fire reflective implement
         private function _create_multi_bullet(fbr:CMLFiber, access_id:Int, isParts:Bool, arg:Array<Dynamic>) : Void
         {
@@ -660,8 +660,8 @@ class CMLState extends CMLListElem
             if (!isParts) {
                 sang = sin.index(fbr.object.angleOnStage);
                 cang = sang + sin.cos_shift;
-                x = fbr.object.x + sin[cang]*fbr.fx - sin[sang]*fbr.fy;
-                y = fbr.object.y + sin[sang]*fbr.fx + sin[cang]*fbr.fy;
+                x = fbr.object.x + @:privateAccess sin.sin[cang]*fbr.fx - @:privateAccess sin.sin[sang]*fbr.fy;
+                y = fbr.object.y + @:privateAccess sin.sin[sang]*fbr.fx + @:privateAccess sin.sin[cang]*fbr.fy;
             }
 
             // calculate angle
@@ -677,12 +677,12 @@ class CMLState extends CMLListElem
                 __reflexive_call(fbr.bul, fbr.barrage.qrtList.end, fbr, isParts, access_id, x, y, arg);
             }
         }
-    
+
         private function __reflexive_call(qrt:CMLBarrageElem, end:CMLListElem, fbr:CMLFiber, isParts:Bool,
                                           access_id:Int, x:Float, y:Float, arg:Array<Dynamic>) : Void
         {
             var qrt_next:CMLBarrageElem = cast(qrt.next,CMLBarrageElem);
-                
+
             if (qrt_next.interval == 0) {
                 if (qrt_next.next == end) {
                     // create bullet
@@ -702,7 +702,7 @@ class CMLState extends CMLListElem
             } else {
                 // create new fiber and initialize
                 var childFiber:CMLFiber = fbr._newChildFiber(CMLFiber.seqRapid, 0, _invert_flag, null, false);
-                
+
                 // copy bullet setting and bullet multiplyer
                 childFiber.bul.copy(qrt_next);
                 childFiber.bul.init(qrt);
@@ -711,7 +711,7 @@ class CMLState extends CMLListElem
                     childFiber.barrage._appendElementCopyOf(cast(elem,CMLBarrageElem));
                     elem=elem.next;
                 }
-                
+
                 // copy other parameters
                 childFiber.fx = fbr.fx;
                 childFiber.fy = fbr.fy;
@@ -732,9 +732,9 @@ class CMLState extends CMLListElem
             var childObject:CMLObject = fbr.object.onFireObject(fbr.seqFire._args);     // create object
             if (childObject == null) return;
             sang = sin.index(a+CMLObject.scrollAngle);                                  // initialize object
-            var mvx:Float = sin[sang+sin.cos_shift];
-            var mvy:Float = sin[sang];
-            childObject._initialize(fbr.object, isParts, access_id, x, y, sin[sang+sin.cos_shift]*v, sin[sang]*v, a);
+            var mvx:Float = @:privateAccess sin.sin[sang+sin.cos_shift];
+            var mvy:Float = @:privateAccess sin.sin[sang];
+            childObject._initialize(fbr.object, isParts, access_id, x, y, @:privateAccess sin.sin[sang+sin.cos_shift]*v, @:privateAccess sin.sin[sang]*v, a);
             fbr._newObjectFiber(childObject, fbr.seqFire, _invert_flag, arg);           // create fiber
         }
 }

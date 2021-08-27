@@ -14,10 +14,10 @@ import org.si.cml.core.CMLState;
 import org.si.cml.core.CMLBarrage;
 import org.si.cml.core.CMLListElem;
 import org.si.cml.core.*;
-import flash.errors.Error;
+import org.si.cml.core.Error;
 import haxe.CallStack;
-    
-/** Class for the fiber (Fiber is called as "micro thread" in some other languages). 
+
+/** Class for the fiber (Fiber is called as "micro thread" in some other languages).
  *  <p>
  *  USAGE<br/>
  *  1) Get the CMLFiber instance from CMLObject.execute().<br/>
@@ -35,8 +35,8 @@ class CMLFiber extends CMLListElem
     // static variables
     //------------------------------------------------------------
         static public var _defaultTarget:CMLObject = null;        // default target instance
-        
-        
+
+
     // variables
     //------------------------------------------------------------
         public  var _id       :Int       = 0;     // id
@@ -48,7 +48,7 @@ class CMLFiber extends CMLListElem
         public  var _barrage  :CMLBarrage;        // bullet multiplyer
         public  var _pointer  :CMLState  = null;  // executing pointer
         public  var _access_id:Int       = 0;     // access id
-        
+
         // children list
         public var _listChild:CMLList;
         public var _firstDest:CMLListElem; // first destruction fiber
@@ -62,7 +62,7 @@ class CMLFiber extends CMLListElem
         public var hang:Float = 0;         // head angle [degree]
         public var fang:Float = 0;         // previous fired angle (due to the compatiblity with bulletML)
         public var bul :CMLBarrageElem;    // primary setting of bullet
-        
+
         public var invt:Int    = 0;         // invertion flag (0=no, 1=x_reverse, 2=y_reverse, 3=xy_reverse)
         public var wtm1:Int    = 1;         // waiting time for "w"
         public var wtm2:Int    = 1;         // waiting time for "~"
@@ -78,7 +78,7 @@ class CMLFiber extends CMLListElem
         public var istc:Array<Dynamic>;     // invertion flag stac
         public var vars:Array<Dynamic>;     // arguments
         public var varc:Array<Dynamic>;     // argument counts
-        
+
         // head option
         static inline public var HO_ABS:Int = 0;
         static inline public var HO_PAR:Int = 1;
@@ -87,21 +87,21 @@ class CMLFiber extends CMLListElem
         static inline public var HO_REL:Int = 4;
         static inline public var HO_VEL:Int = 5;
         static inline public var HO_SEQ:Int = 6;
-        
+
         // I know these are very nervous implementations ('A`)...
         static public var seqDefault:CMLSequence;   // default sequence
         static public var seqRapid  :CMLSequence;   // rapid fire sequence
-        
+
         // statement to wait for object destruction
         private var _stateWaitDest:CMLSequence = null;
-        
+
         // executable looping max limitation in 1 frame
         public static var _loopmax:Int = 1024;
-        
+
         // executable gosub max limitation
         public static var _stacmax:Int = 64;
-        
-        // id not specified 
+
+        // id not specified
         public static inline var ID_NOT_SPECIFIED:Int = 0;
 
 
@@ -115,7 +115,7 @@ class CMLFiber extends CMLListElem
         /** Maximum limitation of the executable gosub nest count. @default 64*/
         static public var maxStacCount(null,set):Int;
     static public function set_maxStacCount(sc:Int):Int   { _stacmax = sc; return _stacmax;}
-            
+
         /** CMLObject that this fiber controls. */
         public var object(get,null) : CMLObject;
         public function get_object()  : CMLObject  { return _object; }
@@ -149,7 +149,7 @@ class CMLFiber extends CMLListElem
 </listing>
          */
         public var string(get,null) : String;
-        public function get_string()  : String { 
+        public function get_string()  : String {
             var stateString:CMLString = cast(_pointer.next,CMLString);
             return (stateString != null) ? stateString._string : null;
         }
@@ -174,10 +174,10 @@ class CMLFiber extends CMLListElem
         /** Does this fiber have any destruction fiber ? */
         public var hasDestFiber(get,null) : Bool;
         public function get_hasDestFiber() : Bool { return (_firstDest != _listChild.end); }
-        
 
-        
-        
+
+
+
     // Constructor
     //------------------------------------------------------------
         /** <b>You cannot create new CMLFiber().</b> You can get CMLFiber instance only from
@@ -190,9 +190,9 @@ class CMLFiber extends CMLListElem
             _gene = 0;
             _listChild = new CMLList();
             _firstDest = _listChild.end;
-            _barrage   = new CMLBarrage();  
-            bul        = new CMLBarrageElem();   
-            lcnt       = new Array(); 
+            _barrage   = new CMLBarrage();
+            bul        = new CMLBarrageElem();
+            lcnt       = new Array();
             jstc       = new Array();
             istc       = new Array();
             vars       = new Array();
@@ -213,7 +213,7 @@ class CMLFiber extends CMLListElem
         {
             if (isActive) _finalize();
         }
-        
+
 
 
 
@@ -232,7 +232,7 @@ class CMLFiber extends CMLListElem
                 elem=elem_next;
             }
         }
-        
+
 
         /** Stop child fiber with specified id. */
         public function destroyChild(child_id:Int) : Bool
@@ -288,7 +288,7 @@ class CMLFiber extends CMLListElem
 
     // reference
     //------------------------------------------------------------
-        /** Get the variables of the sequence "$1...$9". 
+        /** Get the variables of the sequence "$1...$9".
          *  @param Index of variable.
          *  @return Value of variable.
          */
@@ -298,7 +298,7 @@ class CMLFiber extends CMLListElem
         }
 
 
-        /** Get the loop counter of this fiber. 
+        /** Get the loop counter of this fiber.
          *  @param Nested loop index. The index of 0 means the most inner loop, and 1 means the loop 1 outside.
          *  @return Loop count. Start at 0, and end at [loop_count]-1.
          */
@@ -306,16 +306,16 @@ class CMLFiber extends CMLListElem
         {
             return (lcnt.length > nest) ? lcnt[nest] : 0;
         }
-        
-        
-        /** Get the interval value (specified by "i" command) of this fiber. 
+
+
+        /** Get the interval value (specified by "i" command) of this fiber.
          *  @return Interval.
          */
         public function getInterval() : Int
         {
             return chgt;
         }
-        
+
 
 
 
@@ -335,16 +335,16 @@ class CMLFiber extends CMLListElem
             lcnt.splice(0,lcnt.length);     // clear loop counter stac
             jstc.splice(0,jstc.length);                // clear sub-routine call stac
             istc.splice(0,istc.length);                // clear invertion stac
-            
+
             _firstDest = _listChild.end;    // reset last child
-            
+
             _unshiftArguments(seq.require_argc, args_);  // set argument
 
             return (_gene < _stacmax);
         }
-        
-        
-        // finalizer 
+
+
+        // finalizer
         private function _finalize() : Void
         {
             destroyAllChildren();
@@ -363,22 +363,22 @@ class CMLFiber extends CMLListElem
         private function _setObject(obj:CMLObject) : Void { _object = obj; _object_id = obj.id; }
         private function _setTarget(tgt:CMLObject) : Void { _target = tgt; _target_id = tgt.id; }
 
-        
+
         // clear parameters
         private function _clear_param() : Void
         {
             _setTarget(_defaultTarget); // set target object
-            
+
             fx   = 0;       // fiber position
             fy   = 0;
             chgt = 0;       // changing time
             hopt = HO_AIM;  // head option
             hang = 0;       // head angle [degree]
             fang = 0;       // previous fired angle (due to the compatiblity with bulletML)
-            
+
             bul.setSequence(1,0,0,0);
             _barrage.clear();
-            
+
             invt = 0;       // invertion flag
             wtm1 = 1;       // waiting time for "w"
             wtm2 = 1;       // waiting time for "~"
@@ -410,9 +410,9 @@ class CMLFiber extends CMLListElem
             hopt = src.hopt;    // head option
             hang = src.hang;    // head angle [degree]
             fang = src.fang;    // previous fired angle (due to the compatiblity with bulletML)
-            
+
             bul.copy(src.bul);
-            
+
             _barrage.appendCopyOf(src._barrage);
 
             wtm1 = src.wtm1;    // waiting time for "w"
@@ -425,25 +425,25 @@ class CMLFiber extends CMLListElem
 
             return this;
         }
-        
-        
+
+
         // execution in 1 frame and returns next fiber
         private function _onUpdate() : CMLListElem
         {
             // next fiber
             var nextElem:CMLListElem = next;
-            
+
             // kill fiber, if object was destroyed.
             if (_object.id != _object_id) {
                 destroy();
                 return nextElem;
             }
-            
+
             // set target to default, if target was destroyed.
             if (_target.id != _target_id) {
                 _setTarget(_defaultTarget);
             }
-            
+
             // execution
             CMLState._setInvertionFlag(invt);           // set invertion flag
             if (--wcnt <= 0) {                          // execute only if waiting counte<=0
@@ -459,18 +459,18 @@ class CMLFiber extends CMLListElem
                     }
                 }
             }
-            
+
             // run all children
             var elem     :CMLListElem;
             var elem_end :CMLListElem = _listChild.end;
             elem = _listChild.begin;
             while (elem!=elem_end) {
                 elem = cast(elem,CMLFiber)._onUpdate();
-            } 
+            }
 
             // update next fiber
             nextElem = next;
-            
+
             // destroy if no children and no pointer
             if (_pointer==null && _listChild.isEmpty()) {
                 destroy();
@@ -500,15 +500,15 @@ class CMLFiber extends CMLListElem
             if (_object == obj) destroy();
             return elem;
         }
-        
-        
-        
+
+
+
         // push arguments
-        /** @private */ 
+        /** @private */
         public function _unshiftArguments(argCount:Int=0, argArray:Array<Dynamic>=null) : Void
         {
             var i:Int;
-            
+
             if (argCount==0 && (argArray==null || argArray.length==0)) {
                 varc.unshift(0);
             } else {
@@ -525,35 +525,35 @@ class CMLFiber extends CMLListElem
                 }
             }
         }
-        
-        
+
+
         // pop arguments
-        /** @private */ 
+        /** @private */
         public function _shiftArguments() : Void
         {
             vars.splice(0, varc.shift());
         }
 
-        
+
         // push invertion
-        /** @private */ 
+        /** @private */
         public function _unshiftInvertion(invt_:Int) : Void
         {
             istc.unshift(invt);
             invt = invt_;
         }
 
-        
+
         // pop invertion
-        /** @private */ 
+        /** @private */
         public function _shiftInvertion() : Void
         {
             invt = istc.shift();
         }
-        
-        
+
+
         // return fiber's head angle (angle in this game's screen, the scroll direction is 0[deg]).
-        /** @private */ 
+        /** @private */
         public function _getAngle(base:Float) : Float
         {
             switch(hopt) {
@@ -575,10 +575,10 @@ class CMLFiber extends CMLListElem
             }
             return base + hang;
         }
-        
-        
+
+
         // return angle for rotation command(r, rc, cd). HO_AIM is aiming angle from the object.
-        /** @private */ 
+        /** @private */
         public function _getAngleForRotationCommand() : Float
         {
             switch(hopt) {
@@ -594,10 +594,10 @@ class CMLFiber extends CMLListElem
             }
             return 0;
         }
-        
-        
+
+
         // rotate object in minimum rotation (call from CMLState.r())
-        /** @private */ 
+        /** @private */
         public function _isShortestRotation() : Bool
         {
             return (hopt==HO_AIM || hopt==HO_VEL || hopt==HO_FIX);
@@ -616,7 +616,7 @@ class CMLFiber extends CMLListElem
         {
             var activeFibers:CMLList = _rootFiber._listChild;
             if (activeFibers.isEmpty()) return;
-            
+
             var elem    :CMLListElem;
             var elem_end:CMLListElem = activeFibers.end;
             elem=activeFibers.begin;
@@ -626,27 +626,27 @@ class CMLFiber extends CMLListElem
                 elem = nextElem;
             }
         }
-        
+
 
         // 1 frame execution for all fibers
-        /** @private */ 
+        /** @private */
         static public function _onUpdateAll() : Void
         {
             var activeFibers:CMLList = _rootFiber._listChild;
             if (activeFibers.isEmpty()) return;
-            
+
             var elem    :CMLListElem;
             var elem_end:CMLListElem = activeFibers.end;
-            
-            elem=activeFibers.begin; 
+
+            elem=activeFibers.begin;
             while (elem!=elem_end) {
                 elem = cast(elem,CMLFiber)._onUpdate();
             }
         }
-        
-        
+
+
         // new fiber
-        /** call only from CMLObject.execute() @private */ 
+        /** call only from CMLObject.execute() @private */
         static public function _newRootFiber(obj:CMLObject, seq:CMLSequence, args_:Array<Dynamic>, invt_:Int) : CMLFiber
         {
             if (seq == null || seq.isEmpty) return null;
@@ -659,7 +659,7 @@ class CMLFiber extends CMLListElem
             return fbr;
         }
 
-        /** call only from the '@' command (CMLState._fiber()) @private */ 
+        /** call only from the '@' command (CMLState._fiber()) @private */
         public function _newChildFiber(seq:CMLSequence, id:Int, invt_:Int, args_:Array<Dynamic>, copyParam:Bool) : CMLFiber
         {
             if (id != ID_NOT_SPECIFIED) destroyChild(id);                   // destroy old fiber, when id is obtained
@@ -675,12 +675,12 @@ class CMLFiber extends CMLListElem
             if (copyParam) fbr._copy_param(this);                           // copy parameters from parent
             return fbr;
         }
-        
+
         /** call only from the '@ko' command (CMLState._fiber_destruction()) @private */
         public function _newDestFiber(seq:CMLSequence, id:Int, invt_:Int, args_:Array<Dynamic>) : CMLFiber
         {
             _destroyDestFiber(id);                                          // destroy old fiber
-            
+
             if (seq.isEmpty) return null;
             var fbr:CMLFiber = cast(_freeFibers.pop(),CMLFiber);
             if (fbr == null) {
@@ -691,7 +691,7 @@ class CMLFiber extends CMLListElem
                 fbr._stateWaitDest = CMLSequence.newWaitDestuctionSequence();
             }
             cast(fbr._stateWaitDest.next,CMLState).jump = seq;
-            
+
             fbr.insert_before(_firstDest);                                  // child of this
             _firstDest = fbr;                                               // overwrite first destruction fiber
             if (!fbr._initialize(this, _object, fbr._stateWaitDest, id, invt_, args_)) {
@@ -700,7 +700,7 @@ class CMLFiber extends CMLListElem
             return fbr;
         }
 
-        /** call from the 'n', 'f' or '@o' command (search in CMLState) @private */ 
+        /** call from the 'n', 'f' or '@o' command (search in CMLState) @private */
         public function _newObjectFiber(obj:CMLObject, seq:CMLSequence, invt_:Int, args_:Array<Dynamic>) : CMLFiber
         {
             if (seq.isEmpty) return null;
@@ -714,10 +714,10 @@ class CMLFiber extends CMLListElem
             }
             return fbr;
         }
-        
-        
+
+
         // destroy all fibers
-        /** call from CMLObject.halt() @private */ 
+        /** call from CMLObject.halt() @private */
         static public function _destroyAllFibers(obj:CMLObject) : Void
         {
             var fibers  :CMLList = _rootFiber._listChild,

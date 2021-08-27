@@ -9,7 +9,7 @@ package org.si.cml.core;
 
 import org.si.cml.CMLSequence;
 import flash.utils.*;
-import flash.errors.Error;    
+import org.si.cml.core.Error;
 
 using StringTools;
 
@@ -25,12 +25,12 @@ class Seqinfo
 <listing version="3.0">
     // Create CMLSequence from bulletML directly.
     var seq:CMLSequence = new CMLSequence(cast(bulletML,Xml));
-    
+
     // You can refer the translation result of bulletML if you need.
     trace(BMLParser.cmlString);
-    
+
      ...
-    
+
     // "enemy" is an instance of CMLObject. You can execute bulletML from CMLObject.execute().
     enemy.execute(seq);
 </listing>
@@ -42,22 +42,22 @@ class BMLParser
         /** The namespace of bulletML, xmlnx='http://www.asahi-net.or.jp/~cs8k-cyu/bulletml'. */
     //static public var bulletMLNameSpace:Namespace = new Namespace("http://www.asahi-net.or.jp/~cs8k-cyu/bulletml");
 
-        
+
         /** @private */
         function new()
         {
         }
-        
-        
+
+
         // Parse BulletML, and create sequence.
         /** @private */
         static public function _parse(seq:CMLSequence, bulletML:Xml) : Void
         {
             CMLParser._parse(seq, translate(bulletML));
         }
-        
-        
-        /** Translate BulletML to CannonML. 
+
+
+        /** Translate BulletML to CannonML.
         * @param  bulletML XML of BulletML
         * @return cannonML string. Returns "" when there are no <bulletml>s in XML.
         */
@@ -69,7 +69,7 @@ class BMLParser
             //Xml.ignoreComments = true;
             //Xml.ignoreProcessingInstructions = true;
             //Xml.ignoreWhitespace = true;
-            
+
             // bulletML default namespace
             // TODO (haxe conversion): Fix the next line!!
             //default xml namespace = bulletMLNameSpace;
@@ -86,12 +86,12 @@ class BMLParser
             if (!bulletml(xml)) return "";
             _flush();
             _popStac();
-            
+
             return _cml;
         }
-        
 
-        /** CannonML string after translate() and constructor of CMLSequence. 
+
+        /** CannonML string after translate() and constructor of CMLSequence.
          *  You can pick up the cml string after "new CMLSequence(bulletML as XML)".
          */
         static public var cmlString(get,null):String;
@@ -107,8 +107,8 @@ class BMLParser
         {
             return _erroredXML;
         }
-        
-        
+
+
 
 
     // errors
@@ -119,35 +119,35 @@ class BMLParser
             return new Error("<"+elem+"> in <"+xml.nodeName+">");
         }
 
-        
+
         static private function _errorNoElement(xml:Xml, elem:String) : Error
         {
             _erroredXML = xml;
             return new Error("no <"+elem+"> in <"+xml.nodeName+">");
         }
-        
-        
+
+
         static private function _errorAttribute(xml:Xml, attr:String, err:String) : Error
         {
             _erroredXML = xml;
             return new Error("attribute:"+attr+" cannot be "+err);
         }
 
-        
+
         static private function _errorNoAttribute(xml:Xml, attr:String) : Error
         {
             _erroredXML = xml;
             return new Error("no attribute:"+attr+" in <"+xml.nodeName+">");
         }
 
-        
+
         static private function _errorSimpleOnly(xml:Xml) : Error
         {
             _erroredXML = xml;
             return new Error("<"+xml.nodeName+"> has simple content only.");
         }
-        
-        
+
+
         static private function _errorHasOnlyOne(xml:Xml, only:String) : Error
         {
             _erroredXML = xml;
@@ -161,31 +161,31 @@ class BMLParser
         static private var _seqStac:Array<Seqinfo> = new Array<Seqinfo>();
         static private var _label:Array<String>   = new Array<String>();
         static private var _erroredXML:Xml = null;
-        
-        
+
+
         static private function bulletml(xml:Xml) : Bool
         {
             if (xml.nodeName != "bulletml") return false;
-            
+
             var type:String = xml.get("type");
             var elem:Xml;
             for (elem in xml.iterator()) {
                 if (!action(elem, false))
                     if (!fire(elem, false))
-                        if (!bullet(elem, false)) 
+                        if (!bullet(elem, false))
                         {
                             throw _errorElement(xml, elem.nodeName);
                         }
             }
-            
+
             return true;
         }
-        
-        
+
+
         static private function action(xml:Xml, reference:Bool=true) : Bool
         {
             if (xml.nodeName != "action") return false;
-            
+
             // get parameters
             var lbl:String = _getLabel(xml, false);
             // parse contents
@@ -219,11 +219,11 @@ class BMLParser
             } else {
                 _write_ns(seq);
             }
-            
+
             return true;
         }
-        
-        
+
+
         static private function fire(xml:Xml, reference:Bool=true) : Bool
         {
             if (xml.nodeName != "fire") return false;
@@ -236,11 +236,11 @@ class BMLParser
                     len++;
                 }
             }
-            
+
             if (len == 0) throw _errorNoElement(xml, "bullet|bulletRef");
             if (len > 1)  throw _errorHasOnlyOne(xml, "bullet|bulletRef");
-            
-            
+
+
             // get parameters
             var lbl:String = _getLabel(xml, false);
             var dir:String = _getDirection(xml);
@@ -255,9 +255,9 @@ class BMLParser
             if (!bullet(xml))
                 if (!bulletRef(xml))
                     skipDirSpd(xml);
-            
+
             var seq:String = _popStac();
-            
+
             // write
             if (lbl!=null) {
                 _pushStac();
@@ -275,17 +275,17 @@ class BMLParser
 
             return true;
         }
-        
-        
+
+
         static private function bullet(xml:Xml, reference:Bool=true) : Bool
         {
             if (xml.nodeName != "bullet") return false;
-            
+
             // get parameters
             var lbl:String = _getLabel(xml, false);
             var dir:String = _getDirection(xml);
             var spd:String = _getSpeed(xml);
-            
+
             // parse contents
             _pushStac();
             if (dir!=null) _write(dir + " cd");
@@ -295,9 +295,9 @@ class BMLParser
             if (!action(xml))
                 if (!actionRef(xml))
                     skipDirSpd(xml);
-            
+
             var seq:String = _popStac();
-            
+
             // write
             if (lbl!=null) {
                 _pushStac();
@@ -313,18 +313,18 @@ class BMLParser
                     }
                 }
             }
-            
+
             return true;
         }
 
-        
+
         static private function skipDirSpd(xml:Xml) : Bool
         {
             var str:String = xml.nodeName;
             return (str == "direction" || str == "speed");
         }
-        
-        
+
+
         static private function changeDirection(xml:Xml) : Bool
         {
             if (xml.nodeName != "changeDirection") return false;
@@ -360,7 +360,7 @@ class BMLParser
             return true;
         }
 
-        
+
         static private function repeat(xml:Xml) : Bool
         {
             if (xml.nodeName != "repeat") return false;
@@ -402,7 +402,7 @@ class BMLParser
             return true;
         }
 
-        
+
         static private function actionRef(xml:Xml) : Bool
         {
             if (xml.nodeName != "actionRef") return false;
@@ -414,7 +414,7 @@ class BMLParser
             return true;
         }
 
-        
+
         static private function fireRef(xml:Xml) : Bool
         {
             if (xml.nodeName != "fireRef") return false;
@@ -439,7 +439,7 @@ class BMLParser
         static private var _typeString:Array<String>   = ["aim", "absolute", "relative", "sequence"];
         static private var _typeStringH:Array<String>  = ["ht",  "ha",       "ho",       "hs"];
         static private var _typeStringCS:Array<String> = ["",    "csa",      "csr",      "css"];
-            
+
         static private function _getDirection(xml:Xml) : String
         {
             var direction:Xml = null;
@@ -449,9 +449,9 @@ class BMLParser
                     break;
                 }
             }
-                
+
             if (direction == null) return null;
-            
+
             var type:Int = _getType(direction, TYPE_AIM);
             var arg:String = _cmlArgument(direction.firstChild());
             if (type == TYPE_ABSOLUTE) {
@@ -461,7 +461,7 @@ class BMLParser
             return _typeStringH[type] + arg;
         }
 
-        
+
         static private function _getSpeed(xml:Xml) : String
         {
             var type:Int;
@@ -474,7 +474,7 @@ class BMLParser
                 }
             }
             if (speed == null) return null;
-            
+
             switch (xml.nodeName) {
                 case 'bullet': {
                     type = _getType(speed, TYPE_ABSOLUTE);
@@ -503,21 +503,21 @@ class BMLParser
             }
         }
 
-        
+
         static private function _getTerm(xml:Xml) : String
         {
             // (TODO haxe): return (xml.term[0] != null) ? _cmlArgument(xml.term[0]) : "0";
             return "0";
         }
 
-        
+
         static private function _getTimes(xml:Xml) : String
         {
             // (TODO haxe): return (xml.times[0] != null) ? _cmlArgument(xml.times[0]) : "";
             return "";
         }
-        
-        
+
+
         static private function _getParam(xml:Xml) : String
         {
             return null;
@@ -530,9 +530,9 @@ class BMLParser
             // (TODO haxe): }
             // (TODO haxe): return str;
         }
-        
-        
-        
+
+
+
 
     // sub routine for CML writing
     //--------------------------------------------------
@@ -542,36 +542,36 @@ class BMLParser
             _cmlStac[0] += str + " ";
         }
 
-        
+
         static private function _write_ns(str:String) : Void
         {
             if (str == null) return;
             _cmlStac[0] += str;
         }
-        
-        
+
+
         static private function _flush() : Void
         {
             _cml+=_cmlStac[0];
         }
 
-    
+
         static private function _pushStac() : Void
         {
             _cmlStac.unshift("");
             _seqStac.unshift(new Seqinfo());
         }
-    
-        
+
+
         static private function _popStac() : String
         {
             _seqStac.shift();
             return _cmlStac.shift();
         }
 
-        
-        
-    
+
+
+
     // sub routine for XML
     //--------------------------------------------------
         static private function _parseContentsSequencial(xml:Xml, elements:Array<Xml->Bool>) : Void
@@ -606,12 +606,12 @@ class BMLParser
                     att = defaultAtt;
                 }
             }
-            
+
             if (att == TYPE_NULL) throw _errorAttribute(xml, "type", type);
             return att;
         }
-        
-        
+
+
         static private function _getLabel(xml:Xml, reference:Bool) : String
         {
             var label:String = xml.get("label");
@@ -621,8 +621,8 @@ class BMLParser
             }
             return _cmlLabel(label, reference);
         }
-        
-        
+
+
         static private function _cmlLabel(label:String, reference:Bool) : String
         {
             var cmlLabel:String;
@@ -631,7 +631,7 @@ class BMLParser
             } else {
                 // convert to uppercase
                 cmlLabel = label.toUpperCase();
-                
+
                 // If the first character is a number, prefix the string with "_$"
                 // TODO (haxe conversion): Check to see if this works
                 var search:String = "^[0-9]";
@@ -655,15 +655,15 @@ class BMLParser
             return cmlLabel;
         }
         static private var _dictLabel:Map<String, String> = new Map<String, String>();
-        
-        
+
+
         static private function _cmlArgument(arg:Xml) : String
         {
             var rString:String = arg.toString();
             var search:String = "\\s+";
 
             // TODO (haxe conversion): see if this works!
-            
+
             rString = search.replace(rString, "");
 
             search = "\\$rank";
@@ -671,11 +671,11 @@ class BMLParser
 
             search = "\\$rand";
             rString = search.replace(rString, "$$?");
-            
+
             return rString;
         }
-        
-        
+
+
         static private function _cmlArgumentProp(cmlString:String) : String
         {
             // TODO (haxe conversion): See if this function works correctly
@@ -695,7 +695,7 @@ class BMLParser
         }
 
 
-        
+
 
 }
 

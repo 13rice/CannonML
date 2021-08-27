@@ -11,8 +11,8 @@ package org.si.cml;
 import org.si.cml.core.CMLParser;
 import org.si.cml.core.BMLParser;
 import org.si.cml.core.CMLState;
-import openfl.errors.Error;
 import org.si.cml.core.*;
+import org.si.cml.core.Error;
 
     /** Class for the sequences created from the cannonML or the bulletML.
      *  <p>
@@ -52,25 +52,25 @@ class CMLSequence extends CMLState
         private  var _parent:CMLSequence = null;
         private  var _non_labeled_count:Int = 0;
         private  var _global:Bool = false;
-        /** @private */ 
+        /** @private */
         public var require_argc:Int = 0;
 
         // global sequence
         static private var globalSequences:Array<CMLSequence> = new Array();
-        
-        
-        
-        
+
+
+
+
     // properties
     //------------------------------------------------------------
         /** dictionary of child sequence, you can access by label */
     public var childSequence(get, null) : Map<String, CMLSequence>;
     public function get_childSequence() : Map<String, CMLSequence> { return _childSequence; }
-        
+
         /** label of this sequence */
     public var label(get, null) : String;
         public function get_label() : String { return _label; }
-        
+
         /** Flag of global sequence.
          *  <p>
          *  Child sequences of a global sequence are accessable from other sequences.<br/>
@@ -114,10 +114,10 @@ var seqB:CMLSequence = new CMLSequence("&LABEL_G");    // Error; you cannot refe
         {
             return (next==null || cast(next,CMLState).type==CMLState.ST_END);
         }
-        
-        
-        
-        
+
+
+
+
     // functions
     //------------------------------------------------------------
         /** Construct new sequence by a String of cannonML or an XML of bulletML.
@@ -141,18 +141,18 @@ var seqB:CMLSequence = new CMLSequence("&LABEL_G");    // Error; you cannot refe
                 else                  CMLParser._parse(this, data);
             }
         }
-        
-        
-        /** @private */ 
+
+
+        /** @private */
         public override function _setCommand(cmd:String) : CMLState
         {
             //_resetParameters(CMLObject._argumentCountOfNew);
             return this;
         }
-        
-        
-        
-        
+
+
+
+
     // statics
     //------------------------------------------------------------
         /** Register user defined variable "$[a-z_]+".
@@ -163,7 +163,7 @@ var seqB:CMLSequence = new CMLSequence("&LABEL_G");    // Error; you cannot refe
          *  @param func The callback function when the reference appears in sequence.<br/>
          *  The type of callback is <code>function(fbr:CMLFiber):Float</code>. The argument gives a fiber that execute the sequence.
          *  @see CMLFiber
-@example 
+@example
 <listing version="3.0">
 // In the cml-string, you can use "$life" that returns Enemy's life.
 CMLSequence.registerUserValiable("life", referLife);
@@ -193,7 +193,7 @@ function referLife(fbr:CMLFiber) : Float
          *  @param argc The count of argument that this command requires.<br/>
          *  @param requireSequence Specify true if this command require the sequence as the '&', '@' and 'n' commands.
          *  @see CMLFiber
-@example 
+@example
 <listing version="3.0">
 // In the cml-string, you can use "&sound[sound_index],[volume]" that plays sound.
 CMLSequence.registerUserCommand("sound", playSound, 2);
@@ -233,9 +233,9 @@ trace(seqA.getParameter(0), seqA.getParameter(1), seqA.getParameter(2));    // 1
         {
             return (idx < _args.length) ? _args[idx] : 0;
         }
-        
-        
-        
+
+
+
 
     // operations
     //------------------------------------------------------------
@@ -248,7 +248,7 @@ trace(seqA.getParameter(0), seqA.getParameter(1), seqA.getParameter(2));    // 1
         {
             // remove from global list
             global = false;
-            
+
             // disconnect all chains
             var cmd:CMLState, cmd_next:CMLState;
             cmd=cast(next,CMLState);
@@ -257,19 +257,19 @@ trace(seqA.getParameter(0), seqA.getParameter(1), seqA.getParameter(2));    // 1
                 cmd.clear();
                 cmd=cmd_next;
             }
-            
+
             // clear children
             var key:String;
             for (key in _childSequence.keys()) {
                 _childSequence[key].clear();
                 _childSequence.remove(key);
             }
-            
+
             // call clear in super class
             super.clear();
         }
-        
-        
+
+
         /** Parse CannonML-String or BulletML-XML.
          *  @param String or XML is available. String is for CannonML, and XML is for BulletML.
          */
@@ -279,8 +279,8 @@ trace(seqA.getParameter(0), seqA.getParameter(1), seqA.getParameter(2));    // 1
             if (Std.is(data,Xml)) BMLParser._parse(this, data);
             else                  CMLParser._parse(this, data);
         }
-        
-        
+
+
         /** Find child sequence that has specified label.
          *  @param Label to find.
          *  @return Found sequence.
@@ -311,17 +311,17 @@ var seqAC:CMLSequence = seq.findSequence("A.C");    // seqAB is "v0,4[w10f2]". S
                 }
                 // label_ includes access operator "."
                 var parent_label:String = label_.substr(0, idx);
-                if (_childSequence[parent_label] != null) { 
+                if (_childSequence[parent_label] != null) {
                     var child_label:String = label_.substr(idx+1);
                     return _childSequence[parent_label].findSequence(child_label);
                 }
             }
-            
+
             // seek brothers
             return (_parent != null) ? _parent.findSequence(label_) : null;
         }
 
-        
+
         // seek in global sequence
         private function _findGlobalSequence(label_:String) : CMLSequence
         {
@@ -332,14 +332,14 @@ var seqAC:CMLSequence = seq.findSequence("A.C");    // seqAB is "v0,4[w10f2]". S
             }
             return null;
         }
-        
-        
-        
-       
+
+
+
+
     // internals
     //------------------------------------------------------------
         // create new child sequence
-        /** @private */ 
+        /** @private */
         public function newChildSequence(label_:String) : CMLSequence
         {
             var seq:CMLSequence = new CMLSequence();
@@ -348,8 +348,8 @@ var seqAC:CMLSequence = seq.findSequence("A.C");    // seqAB is "v0,4[w10f2]". S
             _addChild(seq);
             return seq;
         }
-        
-        
+
+
         // add child.
         private function _addChild(seq:CMLSequence) : Void
         {
@@ -359,7 +359,7 @@ var seqAC:CMLSequence = seq.findSequence("A.C");    // seqAB is "v0,4[w10f2]". S
                 seq._label = "#" + _non_labeled_count;
                 ++_non_labeled_count;
             }
-            
+
             if (_childSequence[seq._label] != null) throw new Error("sequence label confliction; "+seq._label+" in "+label);
             seq._parent = this;
             _childSequence[seq._label] = seq;
@@ -367,11 +367,11 @@ var seqAC:CMLSequence = seq.findSequence("A.C");    // seqAB is "v0,4[w10f2]". S
 
 
         // verification (call after all parsing)
-        /** @private */ 
+        /** @private */
         public function verify() : Void
         {
             var cmd:CMLState, cmd_next:CMLState, cmd_verify:CMLState, new_cmd:CMLState;
-            
+
             // verification
             cmd=cast(next,CMLState);
             while (cmd!=null) {
@@ -393,7 +393,7 @@ var seqAC:CMLSequence = seq.findSequence("A.C");    // seqAB is "v0,4[w10f2]". S
                     while (cmd_verify.type == CMLState.ST_FORMULA) {
                         cmd_verify = cast(cmd_verify.next,CMLState);
                     }
-                    // if there are no references, ... 
+                    // if there are no references, ...
                     if (cmd_verify.type != CMLState.ST_REFER) {
                         if ((cmd.type & CMLState.ST_RESTRICT) != 0) {
                             // throw error
@@ -403,7 +403,7 @@ var seqAC:CMLSequence = seq.findSequence("A.C");    // seqAB is "v0,4[w10f2]". S
                             new_cmd = new CMLRefer();
                             new_cmd.insert_after(cmd);
                         }
-                    } else 
+                    } else
                     // if there are fomulas between call and reference, shift the call command after fomulas.
                     if (cmd_verify != cmd_next) {
                         cmd.remove_from_list();
@@ -425,7 +425,7 @@ var seqAC:CMLSequence = seq.findSequence("A.C");    // seqAB is "v0,4[w10f2]". S
                 }
                 cmd=cmd_next;
             }
-         
+
             // verify all child sequences
             var seq:CMLSequence;
             for (seq in _childSequence) { seq.verify(); }
@@ -433,7 +433,7 @@ var seqAC:CMLSequence = seq.findSequence("A.C");    // seqAB is "v0,4[w10f2]". S
 
 
         // default sequence do nothing. call from CMLFiber
-        /** @private */ 
+        /** @private */
         static public function newDefaultSequence() : CMLSequence
         {
             var seq:CMLSequence = new CMLSequence();
@@ -446,7 +446,7 @@ var seqAC:CMLSequence = seq.findSequence("A.C");    // seqAB is "v0,4[w10f2]". S
 
 
         // rapid sequence execute rapid sequence. call from CMLFiber
-        /** @private */ 
+        /** @private */
         static public function newRapidSequence() : CMLSequence
         {
             var seq:CMLSequence = new CMLSequence();
@@ -459,7 +459,7 @@ var seqAC:CMLSequence = seq.findSequence("A.C");    // seqAB is "v0,4[w10f2]". S
 
 
         // sequence to wait for object destruction. call from CMLFiber
-        /** @private */ 
+        /** @private */
         static public function newWaitDestuctionSequence() : CMLSequence
         {
             var seq:CMLSequence = new CMLSequence();

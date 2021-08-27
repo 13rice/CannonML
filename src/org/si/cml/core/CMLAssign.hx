@@ -8,7 +8,7 @@
 
 package org.si.cml.core;
 
-import openfl.errors.Error;
+import org.si.cml.core.Error;
 import org.si.cml.CMLObject;
 import org.si.cml.CMLFiber;
 
@@ -22,13 +22,13 @@ class CMLAssign extends CMLState
 
         static public var assign_rex:String = "l\\$([1-9r]\\s*[+\\-*/=])=?";
 
-        
+
     // functions
     //------------------------------------------------------------
         public function new(str:String)
         {
             super(CMLState.ST_NORMAL);
-            
+
             var indexStr:String = str.charAt(0);
             if (indexStr == 'r') {
                 _index = -1;
@@ -36,7 +36,7 @@ class CMLAssign extends CMLState
                 _index = Std.parseInt(indexStr)-1;
                 max_reference = _index+1;
             }
-            
+
             var index:Int = 1;
             while (StringTools.isSpace(str,index)) index++;
 
@@ -57,19 +57,19 @@ class CMLAssign extends CMLState
             return this;
         }
 
-        
+
         private function _asgrg(fbr:CMLFiber):Bool { CMLObject._globalRank[_index]  = _args[0]; return true; }
         private function _addrg(fbr:CMLFiber):Bool { CMLObject._globalRank[_index] += _args[0]; return true; }
         private function _subrg(fbr:CMLFiber):Bool { CMLObject._globalRank[_index] -= _args[0]; return true; }
         private function _mulrg(fbr:CMLFiber):Bool { CMLObject._globalRank[_index] *= _args[0]; return true; }
         private function _divrg(fbr:CMLFiber):Bool { CMLObject._globalRank[_index] /= _args[0]; return true; }
-        
+
         private function _asgr(fbr:CMLFiber):Bool { fbr.object.rank  = _args[0]; return true; }
         private function _addr(fbr:CMLFiber):Bool { fbr.object.rank += _args[0]; return true; }
         private function _subr(fbr:CMLFiber):Bool { fbr.object.rank -= _args[0]; return true; }
         private function _mulr(fbr:CMLFiber):Bool { fbr.object.rank *= _args[0]; return true; }
         private function _divr(fbr:CMLFiber):Bool { fbr.object.rank /= _args[0]; return true; }
-        
+
         private function _asg(fbr:CMLFiber):Bool { fbr.vars[_index]  = _args[0]; return true; }
         private function _add(fbr:CMLFiber):Bool { fbr.vars[_index] += _args[0]; return true; }
         private function _sub(fbr:CMLFiber):Bool { fbr.vars[_index] -= _args[0]; return true; }

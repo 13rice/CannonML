@@ -10,18 +10,18 @@ package org.si.cml.core;
 
 import org.si.cml.CMLFiber;
 import org.si.cml.CMLObject;
-import flash.errors.Error;
+import org.si.cml.core.Error;
 
 /** @private */
 class CMLFormulaLiteral extends CMLFormulaElem
 {
         // Refer from CMLParser._userReferenceRegExp() to sort all reference names.
         static public var defaultReferences:Array<String> = [
-            'i', 'r', 'l', 'x', 'y', 'sx', 'sy', 'v', 'vx', 'vy', 'ho', 'td', 'o', 
-            'p.x', 'p.y', 'p.sx', 'p.sy', 'p.v', 'p.vx', 'p.vy', 'p.ho', 'p.td', 'p.o', 
+            'i', 'r', 'l', 'x', 'y', 'sx', 'sy', 'v', 'vx', 'vy', 'ho', 'td', 'o',
+            'p.x', 'p.y', 'p.sx', 'p.sy', 'p.v', 'p.vx', 'p.vy', 'p.ho', 'p.td', 'p.o',
             't.x', 't.y', 't.sx', 't.sy', 't.v', 't.vx', 't.vy', 't.ho', 't.td', 't.o'
         ];
-        
+
         // Initialize all statics (call from CMLParser._createCMLRegExp())
         static private var _literal_rex:String = null;
         static public var literal_rex(get,null) : String;
@@ -41,7 +41,7 @@ class CMLFormulaLiteral extends CMLFormulaElem
             super();
             func = ltrl;
         }
-        
+
         public function parseLiteral(opr:String="") : Int
         {
             var ret:Int = 0;
@@ -52,8 +52,8 @@ class CMLFormulaLiteral extends CMLFormulaElem
                 num = Std.parseFloat(opr);
                 return 0;
             }
-            
-            
+
+
             // Variables
             num = Std.parseFloat(opr.charAt(opr.length-1));
             if (Math.isNaN(num)) {
@@ -61,8 +61,8 @@ class CMLFormulaLiteral extends CMLFormulaElem
             } else {
                 opr = opr.substr(0, opr.length-1);
             }
-            
-            
+
+
             switch (opr) {
             case "$":
                 func = vars;
@@ -70,51 +70,51 @@ class CMLFormulaLiteral extends CMLFormulaElem
                 if (num == 0) throw new Error('$0 is not available, $[1-9] only.');
                 num--;
 
-            case "$?":    func = rand;    
-            case "$??":   func = rands;   
-            case "$i":    func = refer_i; 
+            case "$?":    func = rand;
+            case "$??":   func = rands;
+            case "$i":    func = refer_i;
             case "$r":    func = (num==0) ? rank : rankg;
-            case "$l":    func = loop; 
+            case "$l":    func = loop;
 
-            case "$x":    func = posx; 
-            case "$y":    func = posy; 
-            case "$sx":   func = sgnx; 
-            case "$sy":   func = sgny; 
-            case "$v":    func = vell; 
-            case "$vx":   func = velx; 
-            case "$vy":   func = vely; 
-            case "$ho":   func = objh; 
-            case "$td":   func = dist; 
+            case "$x":    func = posx;
+            case "$y":    func = posy;
+            case "$sx":   func = sgnx;
+            case "$sy":   func = sgny;
+            case "$v":    func = vell;
+            case "$vx":   func = velx;
+            case "$vy":   func = vely;
+            case "$ho":   func = objh;
+            case "$td":   func = dist;
             case "$o":    func = (num==0) ? cnta : cntc;
-            
-            case "$p.x":  func = prt_posx; 
-            case "$p.y":  func = prt_posy; 
-            case "$p.sx": func = prt_sgnx; 
-            case "$p.sy": func = prt_sgny; 
-            case "$p.v":  func = prt_vell; 
-            case "$p.vx": func = prt_velx; 
-            case "$p.vy": func = prt_vely; 
-            case "$p.ho": func = prt_objh; 
-            case "$p.td": func = prt_dist; 
-            case "$p.o":  func = (num==0) ? prt_cnta : prt_cntc; 
 
-            case "$t.x":  func = tgt_posx; 
-            case "$t.y":  func = tgt_posy; 
-            case "$t.sx": func = tgt_sgnx; 
-            case "$t.sy": func = tgt_sgny; 
-            case "$t.v":  func = tgt_vell; 
-            case "$t.vx": func = tgt_velx; 
-            case "$t.vy": func = tgt_vely; 
-            case "$t.ho": func = tgt_objh; 
-            case "$t.td": func = ltrl; num = 0; 
-            case "$t.o":  func = (num==0) ? tgt_cnta : tgt_cntc; 
+            case "$p.x":  func = prt_posx;
+            case "$p.y":  func = prt_posy;
+            case "$p.sx": func = prt_sgnx;
+            case "$p.sy": func = prt_sgny;
+            case "$p.v":  func = prt_vell;
+            case "$p.vx": func = prt_velx;
+            case "$p.vy": func = prt_vely;
+            case "$p.ho": func = prt_objh;
+            case "$p.td": func = prt_dist;
+            case "$p.o":  func = (num==0) ? prt_cnta : prt_cntc;
+
+            case "$t.x":  func = tgt_posx;
+            case "$t.y":  func = tgt_posy;
+            case "$t.sx": func = tgt_sgnx;
+            case "$t.sy": func = tgt_sgny;
+            case "$t.v":  func = tgt_vell;
+            case "$t.vx": func = tgt_velx;
+            case "$t.vy": func = tgt_vely;
+            case "$t.ho": func = tgt_objh;
+            case "$t.td": func = ltrl; num = 0;
+            case "$t.o":  func = (num==0) ? tgt_cnta : tgt_cntc;
 
             default:
                 func = CMLParser._getUserReference(opr.substr(1));
                 if (func == null) throw new Error(opr +" ?");
             }
 
-            
+
             return ret;
         }
 
@@ -126,14 +126,14 @@ class CMLFormulaLiteral extends CMLFormulaElem
 
 
         private function ltrl(fbr:CMLFiber): Float { return num; }
-        
+
         private function rand(fbr:CMLFiber): Float { return CMLObject.rand(); }
         private function rands(fbr:CMLFiber):Float { return CMLObject.rand()*2-1; }
         private function rank(fbr:CMLFiber): Float { return fbr.object.rank; }
         private function rankg(fbr:CMLFiber):Float { return CMLObject._globalRank[Std.int(num)]; }
         private function vars(fbr:CMLFiber): Float { return fbr.getVeriable(Std.int(num)); }
         private function loop(fbr:CMLFiber): Float { return fbr.getLoopCounter(Std.int(num)); }
-        
+
         private function posx(fbr:CMLFiber): Float { return fbr.object.x; }
         private function posy(fbr:CMLFiber): Float { return fbr.object.y; }
         private function sgnx(fbr:CMLFiber): Float { return (fbr.object.x<0) ? -1 : 1; }

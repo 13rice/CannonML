@@ -8,11 +8,11 @@
 
 package org.si.cml.core;
 
-import openfl.errors.Error;
 using EReg;
 using StringTools;
 import org.si.cml.CMLSequence;
 import haxe.CallStack;
+import org.si.cml.core.Error;
 
 /** @private */
 class CMLParser
@@ -33,8 +33,8 @@ class CMLParser
 
     // functor for allocate CMLState instance.
     static private var newCMLState:Void->CMLState = function():CMLState { return new CMLState(); }
-        
-        
+
+
 
 // constructor
 //------------------------------------------------------------
@@ -71,17 +71,17 @@ class CMLParser
         static public function _parse(seq:CMLSequence, cml_string:String) : Void
         {
             //trace('In CMLParser._parse() for string \"$cml_string\"');
-            
+
             // create regular expression
             var regexp:EReg = _createCMLRegExp();
             var res:Array<String> = new Array<String>();
             var i:Int;
-            
+
             // parsing
             try {
                 // initialize
                 _initialize(seq);
-                
+
                 while (regexp.match(cml_string)) {
 
                     // Convert to the array format expected by all the functions
@@ -89,7 +89,7 @@ class CMLParser
                         res.push(regexp.matched(i));
                     }
                     //trace('CMLParser: Matched: \"$res\"');
-                    
+
                     ////trace(res);
                     if (!_parseFormula(res)) {              // parse formula first
                         _append();                          // append previous formula and statement
@@ -99,7 +99,7 @@ class CMLParser
                         if (!_parseNonLabelDefine(res))     // non-labeled sequence definition
                         if (!_parsePreviousReference(res))  // previous reference
                         if (!_parseCallSequence(res))       // call sequence
-                        if (!_parseAssign(res))             // assign 
+                        if (!_parseAssign(res))             // assign
                         if (!_parseUserDefined(res))        // user define statement
                         if (!_parseComment(res))            // comment
                         if (!_parseString(res))             // string
@@ -113,7 +113,7 @@ class CMLParser
                             }
                         }
                     }
-                    
+
                     // Update the string so we can look for the next match
                     cml_string = regexp.matchedRight();
                     // Reset the matching array
@@ -178,8 +178,8 @@ class CMLParser
             _append_statement(terminator);
             listState.cut(listState.head, listState.tail);
         }
-            
-        
+
+
         static private function _parseFormula(res:Array<String>) : Bool
         {
             var form:String = res[REX_FORMULA];
@@ -200,18 +200,18 @@ class CMLParser
             }
             return true;
         }
-    
+
         static private function _parseStatement(res:Array<String>) : Bool
         {
             if (res[REX_NORMAL] == null) return false;
-            
+
             cmdKey = res[REX_NORMAL];           // command key
             cmdTemp = newCMLState();            // new command
             //trace('in _parseStatement: cmdKey: $cmdKey cmdTemp: $cmdTemp');
-            
+
             // individual operations
             switch (cmdKey) {
-            case "[": 
+            case "[":
                 loopstac.push(cmdTemp);         // push loop stac
             case "[?":
                 loopstac.push(cmdTemp);         // push loop stac
@@ -238,7 +238,7 @@ class CMLParser
             if (cmdTemp != null) {
                 fmlTemp = _check_argument(cmdTemp, res);
             }
-        
+
             return true;
         }
 
@@ -276,7 +276,7 @@ class CMLParser
             fmlTemp = _check_argument(cmdTemp, res);            // push new argument
             return true;
         }
-    
+
         static private function _parseAssign(res:Array<String>) : Bool
         {
             if (res[REX_ASSIGN] == null) return false;
@@ -326,10 +326,10 @@ class CMLParser
         static private inline var REX_ARG_LITERAL:Int = 15; // argument literal
         static private inline var REX_ARG_POSTFIX:Int = 17; // argument postfix
         static private inline var REX_ERROR:Int       = 19; // error
-    
+
         static private var _regexp:EReg = null;             // regular expression
-    
-    
+
+
         // create regular expression once
         static private function _createCMLRegExp() : EReg
         {
@@ -356,15 +356,15 @@ class CMLParser
             //_regexp.lastIndex = 0;
             return _regexp;
         }
-                
-        
+
+
         // append new command
         static private function _append_statement(state:CMLState) : Void
         {
             listState.push(state);
         }
 
-        
+
         // append new formula
         static private function _append_formula(fml:CMLFormula) : Void
         {
@@ -383,21 +383,21 @@ class CMLParser
             end.jump = start;
             return start;
         }
-        
-        
+
+
         // create new sequence
         static private function _new_sequence(parent:CMLSequence, label:String) : CMLSequence
         {
             return parent.newChildSequence(label);
         }
-                
-        
+
+
         // create new reference
         // (null,   null) means previous call "{.}"
         // (define, null) means non-labeled call "{...}"
         // (null, define) means label call "ABC"
         static private function _new_reference(seq:CMLState, name:String) : CMLState
-        {   
+        {
             // append "@" command, when previous command isn't STF_CALLREF.
             if ((cast(listState.tail,CMLState).type & CMLState.STF_CALLREF) == 0) {
                 _append_statement((new CMLState()).setCommand("@"));
@@ -406,15 +406,15 @@ class CMLParser
             return new CMLRefer(seq, name);
         }
 
-        
+
         // create new user defined command
         static private function _new_user_defined(str:String) : CMLUserDefine
         {
             if (mapUsrDefCmd[str] == null) throw new Error("&"+str+" ? (not defined)");  // not defined
             return mapUsrDefCmd[str];
         }
-        
-                
+
+
         // create new assign command
         static private function _new_assign(str:String) : CMLAssign
         {
@@ -422,7 +422,7 @@ class CMLParser
             _update_max_reference(asg.max_reference);
             return asg;
         }
-        
+
 
         // check and update max reference of sequence
         static private function _update_max_reference(max_reference:Int) : Void
@@ -431,17 +431,17 @@ class CMLParser
                 cast(childstac[0],CMLSequence).require_argc = max_reference;
             }
         }
-        
 
-        // set arguments 
+
+        // set arguments
         static private function _check_argument(state:CMLState, res:Array<String>, isComma:Bool=false) : CMLFormula
         {
             var prefix:String  = res[REX_ARG_PREFIX];
             var literal:String = res[REX_ARG_LITERAL];
             var postfix:String = res[REX_ARG_POSTFIX];
-            
+
             //trace('CMLParser: _check_argument: prefix \"$prefix\" literal \"$literal\" postfix \"$postfix\"');
-            
+
             // push 0 before ","
             if (isComma && state._args.length==0) state._args.push(Math.NaN);
 
@@ -451,15 +451,15 @@ class CMLParser
                 // set number when this argument is constant value
                 if (literal.charAt(0) != "$") {
                     if (postfix == null) {
-                        if      (prefix == null) { state._args.push(Std.parseFloat(literal));    return null; } 
+                        if      (prefix == null) { state._args.push(Std.parseFloat(literal));    return null; }
                         else if (prefix == "-")  { state._args.push(-(Std.parseFloat(literal))); return null; }
-                    } else 
+                    } else
                     if (postfix == ")") {
                         if      (prefix == "(")  { state._args.push(Std.parseFloat(literal));    return null; }
                         else if (prefix == "-(") { state._args.push(-(Std.parseFloat(literal))); return null; }
                     }
                 }
-                
+
                 // set formula when this argument is variable
                 state._args.push(0);
                 fml = new CMLFormula(state, false);
@@ -470,7 +470,7 @@ class CMLParser
                 // push NaN when there are no arguments in "," command
                 if (isComma) state._args.push(Math.NaN);
             }
-            
+
             //trace('CMLParser: check_argument: returning $fml');
             return fml;
         }
@@ -479,12 +479,12 @@ class CMLParser
         {
             a = a.toLowerCase();
             b = b.toLowerCase();
-            
+
             if (a < b) return -1;
             if (a > b) return 1;
             return 0;
         }
-    
+
         // regular expression string of user command. call from _createCMLRegExp()
         static private var _userCommandRegExp(get,null) : String;
         static private function get__userCommandRegExp() : String
