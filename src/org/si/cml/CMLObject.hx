@@ -176,11 +176,11 @@ class CMLObject extends CMLListElem
     //------------------------------------------------------------
     // static properties
     /** root object is the default parent of all CMLObjects that are created with the argument of parent=null.*/
-    static public var root(get,null) : CMLObject;
+    static public var root(get,never) : CMLObject;
     static public function get_root():CMLObject { return _root; }
 
     /** Scrolling angle (vertical=-90, horizontal=180). */
-    static public var scrollAngle(get,null) : Float;
+    static public var scrollAngle(get,never) : Float;
     static public function get_scrollAngle() : Float { return _root._scrollAngle; }
 
     /** Flag for scrolling direction (vertical=1, horizontal=0). */
@@ -217,11 +217,11 @@ class CMLObject extends CMLListElem
      }
      </listing>
     */
-    public var id(get,null) : Int;
+    public var id(get,never) : Int;
     public function get_id() : Int { return _id; }
 
     /** The CMLObject that creates this object. Returns root when the parent was destroyed. */
-    public var parent(get,null) : CMLObject;
+    public var parent(get,never) : CMLObject;
     public function get_parent() : CMLObject {
         if (_parent._id != _parent_id) {
             _parent = _root;
@@ -239,19 +239,19 @@ class CMLObject extends CMLListElem
      * @see CMLObject#MT_BULLETML
      * @see CMLObject#MT_GRAVITY
      */
-    public var motion_type(get,null) : Int;
+    public var motion_type(get,never) : Int;
     public function get_motion_type() : Int  { return _motion_type; }
 
     /** Is this object on stage ? */
-    public var isActive(get,null) : Bool;
+    public var isActive(get,never) : Bool;
     public function get_isActive() : Bool { return (_parent != null); }
 
     /** Is this object a part of its parent ? The part object's position is relative to parent's position. */
-    public var isPart(get,null) : Bool;
+    public var isPart(get,never) : Bool;
     public function get_isPart() : Bool { return ((_motion_type & MT_PART_FLAG) == MT_PART_FLAG); }
 
     /** Does this object have another object as a part ? */
-    public var hasParts(get,null) : Bool;
+    public var hasParts(get,never) : Bool;
     public function get_hasParts() : Bool { return (_partChildren.length > 0); }
 
     /** You can define the "$r" value for each object by overriding this property, Ussualy returns CMLObject.globalRank. @see CMLObject#globalRank */
@@ -264,15 +264,15 @@ class CMLObject extends CMLListElem
      *  @see CMLObject#destroy()
      *  @see CMLObject#destroyAll()
      */
-    public var destructionStatus(get,null) : Int;
+    public var destructionStatus(get,never) : Int;
     public function get_destructionStatus() : Int { return _destructionStatus; }
 
 
     /** The x value of position parent related */
-    public var relatedX(get,null) : Float;
+    public var relatedX(get,never) : Float;
     public function get_relatedX() : Float { return ((_motion_type & MT_PART_FLAG) != 0) ? _rx : x; }
     /** The y value of position parent related */
-    public var relatedY(get,null) : Float;
+    public var relatedY(get,never) : Float;
     public function get_relatedY() : Float { return ((_motion_type & MT_PART_FLAG) != 0) ? _ry : y; }
 
 
@@ -305,19 +305,19 @@ class CMLObject extends CMLListElem
     public function set_angleOnStage(ang:Float) : Float   { _head = ang - (((_motion_type & MT_PART_FLAG) != 0)? (_head_offset + _parent.angleOnStage) : (_head_offset)); return _head;}
 
     /** Angle of this parent object, scrolling direction is 0 degree. */
-    public var angleParentOnStage(get,null) : Float;
+    public var angleParentOnStage(get,never) : Float;
     public function get_angleParentOnStage() : Float { return (((_motion_type & MT_PART_FLAG) != 0) ? (_head_offset + _parent.angleOnStage) : (_head_offset)); }
 
     /** Calculate direction of position from origin. */
-    public var anglePosition(get,null) : Float;
+    public var anglePosition(get,never) : Float;
     public function get_anglePosition() : Float { return (((_motion_type & MT_PART_FLAG) != 0) ? (Math.atan2(_ry, _rx)) : (Math.atan2(y, x))) * 57.29577951308232 - _root._scrollAngle; }
 
     /** Calculate direction of velocity. */
-    public var angleVelocity(get,null) : Float;
+    public var angleVelocity(get,never) : Float;
     public function get_angleVelocity() : Float { return ((_motion_type & MT_PART_FILTER) == MT_BULLETML) ? (angleOnStage) : (Math.atan2(vy, vx)*57.29577951308232 - _root._scrollAngle); }
 
     /** Calculate direction of accelaration. */
-    public var angleAccel(get,null) : Float;
+    public var angleAccel(get,never) : Float;
     public function get_angleAccel() : Float { return ((_motion_type & MT_PART_FILTER) == MT_BULLETML) ? (angleOnStage) : (Math.atan2(_ay, _ax)*57.29577951308232 - _root._scrollAngle); }
 
 

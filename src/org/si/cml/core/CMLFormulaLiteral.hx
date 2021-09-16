@@ -24,7 +24,7 @@ class CMLFormulaLiteral extends CMLFormulaElem
 
         // Initialize all statics (call from CMLParser._createCMLRegExp())
         static private var _literal_rex:String = null;
-        static public var literal_rex(get,null) : String;
+        static public var literal_rex(get,never) : String;
         static public function get_literal_rex() : String {
             if (_literal_rex == null) {
                 _literal_rex = "(0x[0-9a-f]{1,8}|\\d+\\.?\\d*|\\$(\\?\\?|\\?|" + CMLParser._userReferenceRegExp + "|)[0-9]?)";

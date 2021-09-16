@@ -110,14 +110,14 @@ class CMLFiber extends CMLListElem
     // properties
     //------------------------------------------------------------
         /** Maximum limitation of the executable looping count in 1 frame. @default 1024*/
-        static public var maxLoopInFrame(null,set):Int;
-    static public function set_maxLoopInFrame(lm:Int):Int { _loopmax = lm; return _loopmax;}
+        static public var maxLoopInFrame(never,set):Int;
+        static public function set_maxLoopInFrame(lm:Int):Int { _loopmax = lm; return _loopmax;}
         /** Maximum limitation of the executable gosub nest count. @default 64*/
-        static public var maxStacCount(null,set):Int;
-    static public function set_maxStacCount(sc:Int):Int   { _stacmax = sc; return _stacmax;}
+        static public var maxStacCount(never,set):Int;
+        static public function set_maxStacCount(sc:Int):Int   { _stacmax = sc; return _stacmax;}
 
         /** CMLObject that this fiber controls. */
-        public var object(get,null) : CMLObject;
+        public var object(get,never) : CMLObject;
         public function get_object()  : CMLObject  { return _object; }
         /** CMLObject that this fiber targets to. */
         public var target(get,set) : CMLObject;
@@ -125,10 +125,10 @@ class CMLFiber extends CMLListElem
         public function set_target(t:CMLObject) : CMLObject { (t==null)?_setTarget(_defaultTarget):_setTarget(t); return _target;}
 
         /** CMLBarrage that this fiber uses. */
-        public var barrage(get,null) : CMLBarrage;
+        public var barrage(get,never) : CMLBarrage;
         public function get_barrage() : CMLBarrage { return _barrage; }
         /** Angle of this fiber. The value is set by "h*" commands. */
-        public var angle(get,null) : Float;
+        public var angle(get,never) : Float;
         public function get_angle()   : Float     { return _getAngle(0) + CMLObject.scrollAngle; }
         /** String argument. <br/>
          *  This property is used in callback function of CMLSequence.registerUserCommand().<br/>
@@ -148,7 +148,7 @@ class CMLFiber extends CMLListElem
     var seq:CMLSequence = new CMLSequence("&print'Hello World !!'");
 </listing>
          */
-        public var string(get,null) : String;
+        public var string(get,never) : String;
         public function get_string()  : String {
             var stateString:CMLString = cast(_pointer.next,CMLString);
             return (stateString != null) ? stateString._string : null;
@@ -157,22 +157,22 @@ class CMLFiber extends CMLListElem
          *  This property is used in callback function of CMLSequence.registerUserCommand() with the option 'requireSequence' is true.<br/>
          *  When the next statement of user command is not sequence. outputs parsing error. Or, when the next statement is '{.}', returns null.
          */
-        public var sequence(get,null) : CMLSequence;
+        public var sequence(get,never) : CMLSequence;
         public function get_sequence() : CMLSequence {
             var stateRefer:CMLRefer = cast(_pointer.next,CMLRefer);
             return (stateRefer != null) ? (cast(stateRefer.jump,CMLSequence)) : null;
         }
         /** Is active ? When this property shows false, this fiber is already destroyed. */
-        public var isActive(get,null) : Bool;
+        public var isActive(get,never) : Bool;
         public function get_isActive() : Bool { return (_object != null); }
         /** Is sequence executing ? */
-        public var isExecuting(get,null) : Bool;
+        public var isExecuting(get,never) : Bool;
         public function get_isExecuting() : Bool { return (_pointer != null); }
         /** Does this fiber have any children ? */
-        public var isParent(get,null) : Bool;
+        public var isParent(get,never) : Bool;
         public function get_isParent() : Bool { return (!_listChild.isEmpty()); }
         /** Does this fiber have any destruction fiber ? */
-        public var hasDestFiber(get,null) : Bool;
+        public var hasDestFiber(get,never) : Bool;
         public function get_hasDestFiber() : Bool { return (_firstDest != _listChild.end); }
 
 

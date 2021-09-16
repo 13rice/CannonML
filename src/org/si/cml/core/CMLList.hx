@@ -6,26 +6,26 @@
 // Ported to haxe by Brian Gunn (gunnbr@gmail.com) in 2014
 
 
-package org.si.cml.core;    
-    
+package org.si.cml.core;
+
 /** @private */
 class CMLList
 {
     private var term:CMLListElem;
-        
+
     public function new()
     {
         term = new CMLListElem();
         term.next = term;
         term.prev = term;
     }
-    
+
     public function clear() : Void
     {
         term.next = term;
         term.prev = term;
     }
-        
+
     public function remove(elem:CMLListElem) : CMLListElem
     {
         if (elem == term) return null;
@@ -41,7 +41,7 @@ class CMLList
         term.next      = elem;
         return elem;
     }
-    
+
     public function shift() : CMLListElem
     {
         var elem:CMLListElem = term.next;
@@ -51,7 +51,7 @@ class CMLList
         elem.clear();
         return elem;
     }
-    
+
     public function push(elem:CMLListElem) : CMLListElem
     {
         elem.prev = term.prev;
@@ -60,7 +60,7 @@ class CMLList
         term.prev      = elem;
         return elem;
     }
-        
+
     public function pop() : CMLListElem
     {
         var elem:CMLListElem = term.prev;
@@ -70,7 +70,7 @@ class CMLList
         elem.clear();
         return elem;
     }
-    
+
     public function cut(start:CMLListElem, end:CMLListElem) : Void
     {
         end.next.prev = start.prev;
@@ -78,7 +78,7 @@ class CMLList
         start.prev = null;
         end.next = null;
     }
-    
+
     public function cat(list:CMLList) : Void
     {
         if (list.isEmpty()) return;
@@ -89,30 +89,30 @@ class CMLList
         list.clear();
     }
 
-    public var begin(get,null) : CMLListElem;
+    public var begin(get,never) : CMLListElem;
     public function get_begin() : CMLListElem
     {
         return term.next;
     }
 
-    public var end(get,null) : CMLListElem;
+    public var end(get,never) : CMLListElem;
     public function get_end() : CMLListElem
     {
         return term;
     }
 
-    public var head(get,null) : CMLListElem;
+    public var head(get,never) : CMLListElem;
     public function get_head() : CMLListElem
     {
         return term.next;
     }
 
-    public var tail(get,null) : CMLListElem;
+    public var tail(get,never) : CMLListElem;
     public function get_tail() : CMLListElem
     {
         return term.prev;
     }
-    
+
     public function isEmpty() : Bool
     {
         return (term.next == term);

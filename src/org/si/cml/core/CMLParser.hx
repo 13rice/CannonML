@@ -486,7 +486,7 @@ class CMLParser
         }
 
         // regular expression string of user command. call from _createCMLRegExp()
-        static private var _userCommandRegExp(get,null) : String;
+        static private var _userCommandRegExp(get,never) : String;
         static private function get__userCommandRegExp() : String
         {
             var cmdlist:Array<String> = new Array<String>();
@@ -501,7 +501,7 @@ class CMLParser
 
 
         // regular expression string of user command. call from CMLFormula
-        static public var _userReferenceRegExp(get,null):String;
+        static public var _userReferenceRegExp(get,never):String;
         static public function get__userReferenceRegExp() : String
         {
             var reflist:Array<String> = new Array<String>();

@@ -94,7 +94,7 @@ class BMLParser
         /** CannonML string after translate() and constructor of CMLSequence.
          *  You can pick up the cml string after "new CMLSequence(bulletML as XML)".
          */
-        static public var cmlString(get,null):String;
+        static public var cmlString(get,never):String;
         static public function get_cmlString() : String
         {
             return _cml;
@@ -102,7 +102,7 @@ class BMLParser
 
 
         /** Errored XML. Returns null when there are no error. */
-        static public var erroredXML(get,null) : Xml;
+        static public var erroredXML(get,never) : Xml;
         static public function get_erroredXML() : Xml
         {
             return _erroredXML;

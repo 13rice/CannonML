@@ -64,11 +64,11 @@ class CMLSequence extends CMLState
     // properties
     //------------------------------------------------------------
         /** dictionary of child sequence, you can access by label */
-    public var childSequence(get, null) : Map<String, CMLSequence>;
+    public var childSequence(get, never) : Map<String, CMLSequence>;
     public function get_childSequence() : Map<String, CMLSequence> { return _childSequence; }
 
         /** label of this sequence */
-    public var label(get, null) : String;
+    public var label(get, never) : String;
         public function get_label() : String { return _label; }
 
         /** Flag of global sequence.
@@ -109,7 +109,7 @@ var seqB:CMLSequence = new CMLSequence("&LABEL_G");    // Error; you cannot refe
 
 
         /** Is this sequence empty ? */
-      public var isEmpty(get,null) : Bool;
+      public var isEmpty(get,never) : Bool;
         public function get_isEmpty() : Bool
         {
             return (next==null || cast(next,CMLState).type==CMLState.ST_END);

@@ -30,7 +30,7 @@ class CMLFormula extends CMLState
         static private  var _operand_rex:String = null;
 
         // Initialize all statics (call from CMLParser._createCMLRegExp())
-        static public var operand_rex(get,null) : String;
+        static public var operand_rex(get,never) : String;
         static public function get_operand_rex() : String {
             if (_operand_rex == null) {
                 _operand_rex  = "(" + CMLFormulaOperator.prefix_rex + "+)?";
