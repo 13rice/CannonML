@@ -80,8 +80,8 @@ class BMLParser
 
             // start parsing
             _cml = "";
-            _cmlStac.splice(_cmlStac.length, 0);
-            _label.splice(_label.length, 0);
+            _cmlStac.splice(0, _cmlStac.length);
+            _label.splice(0, _label.length);
             _pushStac();
             if (!bulletml(xml)) return "";
             _flush();

@@ -1,0 +1,11 @@
+{
+	"name": "cannonml",
+	"url" : "https://github.com/nspitko/CML/",
+	"license": "none",
+	"tags": [],
+	"description": "Cannon Macro Language",
+	"version": "0.0.1",
+	"classPath": "src/",
+	"releasenote": "",
+	"contributors": ["gunnbr","nspitko"]
+  }

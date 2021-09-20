@@ -79,7 +79,7 @@ class CMLState extends CMLListElem
 
         override public function clear() : Void
         {
-            _args.splice(_args.length,0);
+            _args.splice(0,_args.length);
             jump = null;
             super.clear();
         }
