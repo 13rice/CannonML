@@ -38,6 +38,7 @@ class CMLFormula extends CMLState
                 _operand_rex += CMLFormulaLiteral.literal_rex + "?";
                 _operand_rex += "\\s*";
                 _operand_rex += "(" + CMLFormulaOperator.postfix_rex + "+)?";
+                _operand_rex += "('(.*?)')?";
                 _prefixRegExp  = new EReg(CMLFormulaOperator.prefix_rex, 'g');
                 _postfixRegExp = new EReg(CMLFormulaOperator.postfix_rex, 'g');
                 // NOTE: CMLFormulaLiteral.literal_rex is a property.
@@ -57,16 +58,16 @@ class CMLFormula extends CMLState
             jump = state;
             func = _calc;
             _arg_index = state._args.length - 1;
-            stacOperator.splice(stacOperator.length, 0);
+            stacOperator.splice(0, stacOperator.length);
             max_reference = 0;
 
             // Pickup Number From Argument ?
             if (pnfa) {
-                stacOperand.splice(stacOperand.length,0);
+                stacOperand.splice(0, stacOperand.length);
                 stacOperand.push(new CMLFormulaLiteral());
                 cast(stacOperand[0],CMLFormulaLiteral).num = state._args[_arg_index];
             } else {
-                stacOperand.splice(stacOperand.length, 0);
+                stacOperand.splice(0, stacOperand.length);
             }
         }
 

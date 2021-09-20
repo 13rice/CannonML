@@ -325,7 +325,8 @@ class CMLParser
         static private inline var REX_ARG_PREFIX:Int  = 13; // argument prefix
         static private inline var REX_ARG_LITERAL:Int = 15; // argument literal
         static private inline var REX_ARG_POSTFIX:Int = 17; // argument postfix
-        static private inline var REX_ERROR:Int       = 19; // error
+        static private inline var REX_ARG_STRING:Int  = 19; // argument postfix
+        static private inline var REX_ERROR:Int       = 20; // error
 
         static private var _regexp:EReg = null;             // regular expression
 
@@ -345,8 +346,8 @@ class CMLParser
                 rexstr += "|(\\{\\.\\})";                           // previous reference (res[10])
                 rexstr += "|#([A-Z_][A-Z0-9_]*)[ \t]*\\{";          // labeled sequence definition (res[11])
                 rexstr += "|(\\{)";                                 // non-labeled sequence definition (res[12])
-                rexstr += ")[ \t]*" + CMLFormula.operand_rex + ")"; // argument(res[13,14];prefix, res[15,16];literal, res[17,18];postfix)
-                rexstr += "|([a-z]+)";                              // error (res[19])
+                rexstr += ")[ \t]*" + CMLFormula.operand_rex + ")"; // argument(res[13,14];prefix, res[15,16];literal, res[17,18];postfix; string[19])
+                rexstr += "|([a-z]+)";                              // error (res[20])
                 _regexp = new EReg(rexstr, "gms");
 
                 // NOTE: CMLFormula.operand_rex is a property and it initializes CMLFormula.
@@ -439,14 +440,27 @@ class CMLParser
             var prefix:String  = res[REX_ARG_PREFIX];
             var literal:String = res[REX_ARG_LITERAL];
             var postfix:String = res[REX_ARG_POSTFIX];
+            var string:String = res[REX_ARG_STRING];
+
 
             //trace('CMLParser: _check_argument: prefix \"$prefix\" literal \"$literal\" postfix \"$postfix\"');
+
+
+            // push argument
+            var fml:CMLFormula = null;
+
+            if( string != null )
+            {
+                var s = string.substr(1,string.length-2);
+                state._args.push( s );
+                return fml;
+            }
 
             // push 0 before ","
             if (isComma && state._args.length==0) state._args.push(Math.NaN);
 
-            // push argument
-            var fml:CMLFormula = null;
+
+
             if (literal != null) {
                 // set number when this argument is constant value
                 if (literal.charAt(0) != "$") {
