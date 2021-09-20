@@ -22,7 +22,7 @@ class CMLParser
     // user defined reference
     static private var mapUsrDefRef:Map<String, CMLFiber->Float> = new Map<String, CMLFiber->Float>();
     // user defined command
-    static private var mapUsrDefCmd:Map<String, CMLUserDefine> = new Map<String, CMLUserDefine>();
+    static private var mapUsrDefCmd:Map<String, {func: CMLFiber->Array<Dynamic>->Void, argc: Int, reqseq:Bool }> = [];
 
     static private var listState:CMLList = new CMLList();       // statement chain
     static private var loopstac :Array<CMLState> = new Array<CMLState>();  // loop stac
@@ -58,9 +58,8 @@ class CMLParser
     // set user define setter
     static public function userCommand(name:String, func:CMLFiber->Array<Dynamic>->Void, argc:Int, requireSequence:Bool) : Void
     {
-        var target : CMLUserDefine = new CMLUserDefine({func:func, argc:argc, reqseq:requireSequence});
         //trace('**** Defining new user command \"$name\".');
-        mapUsrDefCmd[name] = target;
+        mapUsrDefCmd[name] = {func:func, argc:argc, reqseq:requireSequence};
     }
 
 
@@ -412,7 +411,7 @@ class CMLParser
         static private function _new_user_defined(str:String) : CMLUserDefine
         {
             if (mapUsrDefCmd[str] == null) throw new Error("&"+str+" ? (not defined)");  // not defined
-            return mapUsrDefCmd[str];
+            return new CMLUserDefine( mapUsrDefCmd[str]  );
         }
 
 
