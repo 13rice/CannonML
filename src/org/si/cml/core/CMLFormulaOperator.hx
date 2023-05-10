@@ -17,7 +17,7 @@ class CMLFormulaOperator extends CMLFormulaElem
 {
         static private  var sin:CMLSinTable = new CMLSinTable();
         
-        static public var prefix_rex :String = "([-!(]|\\$sin|\\$cos|\\$tan|\\$asn|\\$acs|\\$atn|\\$sqr|\\$i\\?|\\$i\\?\\?|\\$int|\\$abs)";
+        static public var prefix_rex :String = "([-!(]|\\$sin|\\$cos|\\$tan|\\$asn|\\$acs|\\$atn|\\$sqr|\\$i\\?\\?|\\$i\\?|\\$int|\\$abs)";
         static public var postfix_rex:String = "(\\))";
 
         public var priorL:Float = 0;
