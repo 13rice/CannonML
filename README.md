@@ -9,11 +9,14 @@ Haxe port
 This is a port of Keim's great CannonML to Haxe.
 
 At the moment, most everything works to the point where NomlTest works!
+Some fixes are still ongoing.
 
 Scripting style
 ----
 
     bs,4,,10bm5,360f10{i30vw90br5,360,2,2f4{i30v~ko}w10ay0.05}
+
+TODO: update the links, all are gone now !
 
 This quite cryptic script is used [here](http://wonderfl.net/c/22vi).  
 Basic tutorials are in [workbench](http://soundimpulse.sakura.ne.jp/SolidImage/cml/workingbench.html).  
